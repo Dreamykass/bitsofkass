@@ -1,8 +1,14 @@
 
+#include <thread>
+#include <future>
 #include <iostream>
 
-int main()
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include <doctest.hpp>
+
+#include "latch.hpp"
+
+TEST_CASE("")
 {
-    std::cout << "hello test!";
-    return 0;
+
 }
