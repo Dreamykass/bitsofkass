@@ -1,63 +1,88 @@
 #pragma once
 
 #include <mutex>
-
 #include <queue>
 #include <list>
 #include <utility>
+#include <latch.hpp>
 
-namespace aq {
+namespace bok {
+	// class that allows thread-safe exclusive access to a resource, in queued manner
+	// - resource, meaning the object of the type that the class is instanced with
+	// - queued, meaning that access to the resource is provided in queued manner
+	//   that is, threads are served access in the order of requests - first in, first out
+	// - exclusive, meaning that at a time, only one thread can access the resource
+	//   and the thread that's next in the queue will be able to access it, only after the first one is done
+	// \n
+	// it is non-copyable, non-movable
 	template<typename Payload> class AccessQueue {
 	public:
-		struct LockedPayload {
+		// helper class that is returned by AccessQueue::GetAccess and ::GetPriorityAccess
+		// internally, it is just { Payload*; std::unique_lock<std::mutex>; }
+		// it allows exclusive access to the resource, meaning that only no other thread
+		// can access the resource, until it is unlocked (either manually, or by leaving scope)
+		// \n
+		// it is movable (std::unique_lock::swap() on move), but not copyable
+		// has star and arrow operator overloads - UB if resource is not locked or empty
+		class LockedPayload {
 		private:
-			Payload* payload;
-			std::unique_lock<std::mutex> lock;
+			Payload* m_payload;
+			std::unique_lock<std::mutex> m_lock;
 
 		public:
 			// constructs an empty LockedPayload
-			LockedPayload() : payload(nullptr) {};
+			LockedPayload() : m_payload(nullptr) {};
 			// LockedPayload adopts the lock
 			LockedPayload(Payload& _payload, std::mutex& _mutex)
-				: payload(&_payload), lock(_mutex, std::adopt_lock) {}
+				: m_payload(&_payload), m_lock(_mutex, std::adopt_lock) {}
 
 			LockedPayload(const LockedPayload& other) = delete;
 			LockedPayload(LockedPayload&& other) noexcept {
-				payload = other.payload;
-				other.payload = nullptr;
-				lock.swap(other.lock);
+				m_payload = other.m_payload;
+				other.m_payload = nullptr;
+				m_lock.swap(other.m_lock);
 			}
 
 			LockedPayload& operator=(const LockedPayload& other) = delete;
 			LockedPayload& operator=(LockedPayload&& other) noexcept {
-				payload = other.payload;
-				other.payload = nullptr;
-				lock.swap(other.lock);
+				m_payload = other.m_payload;
+				other.m_payload = nullptr;
+				m_lock.swap(other.m_lock);
 				return *this;
 			}
 
 		public:
 			const Payload& operator*() const {
-				return payload;
+				return m_payload;
 			}
 			const Payload* const operator->() const {
-				return &payload;
+				return &m_payload;
 			}
 			Payload& operator*() {
-				return *payload;
+				return *m_payload;
 			}
 			Payload* const operator->() {
-				return payload;
+				return m_payload;
 			}
 
+			// manually unlocks (the mutex that's guarding) the resource,
+			// effectively allowing the AccessQueue to give access 
+			// to the thread that's next in the queue (if there's any)
+			// if the lock is already unlocked, it's UB
 			void Unlock() {
-				lock.unlock();
+				m_lock.unlock();
 			}
+			// manually locks (the mutex that's guarding) the resource,
+			// effectively bypassing the queue
+			// if the lock is already unlocked, it's UB
 			void LockAgain() {
-				lock.lock();
+				m_lock.lock();
 			}
+			// true if LockedPayload has a resource
+			// (and the mutex that's guarding it)
+			// false otherwise
 			bool Empty() {
-				if (payload == nullptr)
+				if (m_payload == nullptr)
 					return true;
 				else
 					return false;
@@ -65,14 +90,16 @@ namespace aq {
 		};
 
 	private:
-		Payload payload;
-		std::mutex payload_mx;
+		Payload m_payload;
+		std::mutex m_payload_mx;
 
-		std::mutex queue_mx;
-		//std::queue<std::latch, std::list<std::latch>> queue;
+		std::mutex m_queue_mx;
+		std::queue<bok::Latch<>, std::list<bok::Latch<>>> m_queue;
 
 	public:
-		AccessQueue() {}
+		AccessQueue(Payload&& _payload) {
+			m_payload = std::move(_payload);
+		}
 		~AccessQueue() {}
 
 		AccessQueue(const AccessQueue& other) = delete;
@@ -82,68 +109,73 @@ namespace aq {
 		AccessQueue& operator=(AccessQueue&& other) noexcept = delete;
 
 	public:
-		// returns bool,
+		// returns bool from the occupancy of the resource,
 		// true if the payload is occupied (and the mutex is locked),
 		// false if the payload is not occupied (and the mutex is unlocked)
+		// does not guarantee 100% accuracy
 		bool Occupied() noexcept {
-			std::unique_lock queue_lock(queue_mx);
-			std::unique_lock payload_lock(payload_mx, std::defer_lock);
+			std::unique_lock queue_lock(m_queue_mx);
+			std::unique_lock payload_lock(m_payload_mx, std::defer_lock);
 			return !payload_lock.try_lock();
 		}
 
-		// returns size_t,
-		// 
+		// returns size_t from the length of the queue,
+		// does not guarantee 100% accuracy
 		size_t Length() noexcept {
-			std::unique_lock queue_lock(queue_mx);
-			return queue.size();
+			std::unique_lock queue_lock(m_queue_mx);
+			return m_queue.size();
+			return 0;
 		}
 
-		// returns Payload&,
-		// with no regards to the access queue or any thread safety
-		Payload& UnsafeGet() {
-			return payload;
+		// returns the resource managed by the AccessQueue,
+		// with no regards to the queue or any thread safety
+		Payload& UnsafeGet() noexcept {
+			return m_payload;
 		}
 
-		// returns {Payload&; std::unique_lock<std::mutex>;},
-		// bypasses the access queue completely,
+		// returns LockedPayload,
+		// composed from the managed resource and the mutex that guards it
+		// bypasses the access queue completely, and instead
 		// just tries to lock the mutex that's guarding the payload
 		LockedPayload GetPriorityAccess() {
-			payload_mx.lock();
-			return LockedPayload(payload, payload_mx);
+			// lock the payload mutex - and therefore also wait for access
+			// when mutex is acquired, lock the queue
+			// if the queue is not empty, wake up the thread that's first in the queue
+			// return, by constructing a LockedPayload that adopts the locked payload mutex
+			// and also unlock the queue mutex (when it falls out of scope)
+
+			m_payload_mx.lock();
+
+			std::unique_lock queue_lock(m_queue_mx);
+			if (m_queue.size() > 0) {
+				m_queue.front().Release();
+			}
+
+			return LockedPayload(m_payload, m_payload_mx);
 		}
 
-		// returns {Payload&; std::unique_lock<std::mutex>;},
+		// returns LockedPayload,
+		// composed from the managed resource and the mutex that guards it
 		// waits properly for access,
 		// gets put into the back of the queue
 		LockedPayload GetAccess() {
-			std::unique_lock queue_lock(queue_mx);
+			// lock the queue mutex
+			// if the queue is empty
+			//    try to lock the payload mutex
+			//    if it was locked successfully, return
+			//    else add self to queue, and wait... and release the queue lock afterwards????????
+			// 
 
-			//if()
+			std::unique_lock queue_lock(m_queue_mx);
+			if (m_queue.size() > 0) {
 
+			}
+			else {
 
-			// queue is empty
-			//if (payload_mx.try_lock()) {
-			//	return return LockedPayload(payload, payload_mx);
-			//} // this logic is bad - should check if Length is 0 or something
-			  // also should queue.front().notify() if Length is non-zero, after lock?
-			// queue is not empty
-			//else {
-				// // push a latch, and wait on it until awoken
-				// queue.push_back(std::latch());
-				// std::latch& latch = queue.back();
-				// queue_mx.unlock();
-				// latch.wait();
-
-				// // awoken now by another thread
-				// queue_lock.lock();
-				// queue.pop_front();
-				// queue.front().notify();
-				// payload_mx.lock(); // todo: change it so LockedPayload adopts the payload_mx
-				// return LockedPayload(payload, payload_mx);
-			//}
+			}
+			
+			return LockedPayload(m_payload, m_payload_mx);
 		}
-
-	private:
 
 	};
 }
