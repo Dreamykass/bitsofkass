@@ -209,3 +209,34 @@ TEST_CASE("Decrement, with 2 threads")
     CHECK(vec[4] == "main after callback decrement");
     CHECK(vec[5] == "main after async[1..2].get()");
 }
+TEST_CASE("Wait with callback")
+{
+    std::vector<std::string> vec;
+    auto vec_push_back =
+        [&](std::string _x) {
+            static std::mutex mut;
+            std::unique_lock lock(mut);
+            vec.push_back(_x);
+        };
+
+    bok::Latch<1> latch;
+    vec_push_back("main start");
+
+    auto async1 = std::async(
+        [&]() {
+            latch.Wait();
+            vec_push_back("async after waiting");
+        });
+
+    vec_push_back("main before release");
+    CHECK(vec.size() == 2);
+    latch.Release();
+    async1.get();
+
+    vec_push_back("main after release");
+
+    CHECK(vec[0] == "main start");
+    CHECK(vec[1] == "main before release");
+    CHECK(vec[2] == "async after waiting");
+    CHECK(vec[3] == "main after release");
+}

@@ -67,11 +67,43 @@ namespace bok
                 m_condvar.wait(ulock);
         }
 
+        // doesn't decrement the counter
+        // calls the callback (void()) passed in the parameter
+        // just after locking the mutex guarding the counter
+        // and blocks the caller until the counter is zero
+        template <typename Fun>
+        void Wait(Fun callback)
+        {
+            std::unique_lock<std::mutex> ulock(m_mutex);
+            callback();
+
+            while (m_downcounter != 0)
+                m_condvar.wait(ulock);
+        }
+
         // decrements the counter
         // and blocks the caller until the counter is zero
         void Arrive()
         {
             std::unique_lock<std::mutex> ulock(m_mutex);
+            m_downcounter--;
+
+            if (m_downcounter == 0)
+                m_condvar.notify_all();
+
+            while (m_downcounter != 0)
+                m_condvar.wait(ulock);
+        }
+
+        // decrements the counter
+        // calls the callback (void()) passed in the parameter
+        // just after locking the mutex guarding the counter
+        // and blocks the caller until the counter is zero
+        template <typename Fun>
+        void Arrive(Fun callback)
+        {
+            std::unique_lock<std::mutex> ulock(m_mutex);
+            callback();
             m_downcounter--;
 
             if (m_downcounter == 0)
