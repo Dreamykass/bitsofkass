@@ -2,6 +2,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <utility>
+#include <type_traits>
 
 namespace bok
 {
@@ -72,8 +73,10 @@ namespace bok
         // just after locking the mutex guarding the counter
         // and blocks the caller until the counter is zero
         template <typename Fun>
-        void Wait(Fun callback)
+        void Wait(Fun &&callback)
         {
+            static_assert(std::is_invocable<Fun>::value, "bok::Latch::Wait(Fun callback), Fun must be callable, and without arguments");
+
             std::unique_lock<std::mutex> ulock(m_mutex);
             callback();
 
@@ -100,8 +103,10 @@ namespace bok
         // just after locking the mutex guarding the counter
         // and blocks the caller until the counter is zero
         template <typename Fun>
-        void Arrive(Fun callback)
+        void Arrive(Fun &&callback)
         {
+            static_assert(std::is_invocable<Fun>::value, "bok::Latch::Arrive(Fun callback), Fun must be callable, and without arguments");
+
             std::unique_lock<std::mutex> ulock(m_mutex);
             callback();
             m_downcounter--;

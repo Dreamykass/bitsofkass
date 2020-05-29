@@ -209,7 +209,7 @@ TEST_CASE("Decrement, with 2 threads")
     CHECK(vec[4] == "main after callback decrement");
     CHECK(vec[5] == "main after async[1..2].get()");
 }
-TEST_CASE("Wait with callback")
+TEST_CASE("Wait and Arrive with callback")
 {
     std::vector<std::string> vec;
     auto vec_push_back =
@@ -224,19 +224,23 @@ TEST_CASE("Wait with callback")
 
     auto async1 = std::async(
         [&]() {
-            latch.Wait();
+            latch.Wait([&]() { vec_push_back("async calls back"); });
             vec_push_back("async after waiting");
         });
 
-    vec_push_back("main before release");
-    CHECK(vec.size() == 2);
-    latch.Release();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    vec_push_back("main before arrival");
+    CHECK(vec.size() == 3);
+
+    latch.Arrive([&]() { vec_push_back("main calls back"); });
     async1.get();
 
-    vec_push_back("main after release");
+    vec_push_back("main at end");
 
     CHECK(vec[0] == "main start");
-    CHECK(vec[1] == "main before release");
-    CHECK(vec[2] == "async after waiting");
-    CHECK(vec[3] == "main after release");
+    CHECK(vec[1] == "async calls back");
+    CHECK(vec[2] == "main before arrival");
+    CHECK((vec[3] == "async after waiting" || vec[3] == "main calls back"));
+    CHECK((vec[4] == "async after waiting" || vec[4] == "main calls back"));
+    CHECK(vec[5] == "main at end");
 }
