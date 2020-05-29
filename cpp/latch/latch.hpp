@@ -5,7 +5,11 @@
 
 namespace bok
 {
-    template <size_t m_max>
+    // a counting latch (single-use non-movable non-copyable barrier)
+    // calling thread waits (blocks) on the latch (or arrives and waits, which also decrements the counter),
+    // until the counter reaches zero, because of: arriving, decrementation, or until
+    // another thread calls release, which sets the counter to zero
+    template <size_t m_max = std::numeric_limits<size_t>::max()>
     class Latch
     {
     private:
@@ -25,13 +29,15 @@ namespace bok
 
     public:
         // decrements the counter by n = 1
-        // if n > counter, then it's UB
+        // if n > counter, then throws std::underflow_error
         void Decrement(size_t n = 1)
         {
             std::unique_lock ulock(m_mutex);
 
-            if (m_downcounter > 0)
-                m_downcounter -= n;
+            if (n > m_downcounter)
+                throw std::underflow_error("bok::Latch::Decrement(" + std::to_string(n) + "); latch downcounter would underflow");
+
+            m_downcounter -= n;
 
             if (m_downcounter == 0)
                 m_condvar.notify_all();
@@ -39,7 +45,7 @@ namespace bok
             return;
         }
 
-        // zeroes the counter,
+        // zeroes the counter
         // effectively releasing any and every waiting thread
         // no effect if counter is already zero
         void Release()
@@ -52,7 +58,7 @@ namespace bok
             return;
         }
 
-        // doesn't decrement the counter,
+        // doesn't decrement the counter
         // and blocks the caller until the counter is zero
         void Wait()
         {
@@ -61,7 +67,7 @@ namespace bok
                 m_condvar.wait(ulock);
         }
 
-        // decrements the counter,
+        // decrements the counter
         // and blocks the caller until the counter is zero
         void Arrive()
         {
@@ -74,7 +80,6 @@ namespace bok
             while (m_downcounter != 0)
                 m_condvar.wait(ulock);
         }
-
-    private:
     };
+
 } // namespace bok
