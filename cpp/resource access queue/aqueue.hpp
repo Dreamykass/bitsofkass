@@ -22,7 +22,7 @@ namespace bok {
 		// it allows exclusive access to the resource, meaning that only no other thread
 		// can access the resource, until it is unlocked (either manually, or by leaving scope)
 		// \n
-		// it is movable (std::unique_lock::swap() on move), but not copyable
+		// it is movable, but not copyable
 		// has star and arrow operator overloads - UB if resource is not locked or empty
 		class LockedPayload {
 		private:
@@ -32,14 +32,15 @@ namespace bok {
 		public:
 			// constructs an empty LockedPayload
 			LockedPayload() : m_payload(nullptr) {};
-			// LockedPayload adopts the lock
-			LockedPayload(Payload& _payload, std::mutex& _mutex)
-				: m_payload(&_payload), m_lock(_mutex, std::adopt_lock) {}
+			// LockedPayload adopts the lock (it is moved inside)
+			LockedPayload(Payload& _payload, std::unique_lock<std::mutex> _mutex)
+				: m_payload(&_payload), m_lock(std::move(_mutex)) {}
 
 			LockedPayload(const LockedPayload& other) = delete;
 			LockedPayload(LockedPayload&& other) noexcept {
 				m_payload = other.m_payload;
 				other.m_payload = nullptr;
+				//m_lock = std::move(other.m_lock);
 				m_lock.swap(other.m_lock);
 			}
 
@@ -47,6 +48,7 @@ namespace bok {
 			LockedPayload& operator=(LockedPayload&& other) noexcept {
 				m_payload = other.m_payload;
 				other.m_payload = nullptr;
+				//m_lock = std::move(other.m_lock);
 				m_lock.swap(other.m_lock);
 				return *this;
 			}
@@ -72,12 +74,14 @@ namespace bok {
 			void Unlock() {
 				m_lock.unlock();
 			}
+
 			// manually locks (the mutex that's guarding) the resource,
 			// effectively bypassing the queue
 			// if the lock is already unlocked, it's UB
 			void LockAgain() {
 				m_lock.lock();
 			}
+
 			// true if LockedPayload has a resource
 			// (and the mutex that's guarding it)
 			// false otherwise
@@ -87,13 +91,26 @@ namespace bok {
 				else
 					return false;
 			}
+
+			// drops/nulls the lock and the resource, effectively the
+			// same as moving an empty LockedPayload into the object
+			void Clear() {
+				m_payload = nullptr;
+				m_lock = decltype(m_lock)();
+			}
 		};
 
 	private:
+		// the resource
 		Payload m_payload;
+		// mutex guarding the resource, that's returned (via LockedPayload) from Get(Priority)Access
+		// and unlocked after the caller is done with the resource
 		std::mutex m_payload_mx;
 
+		// mutex guarding the access to the queue, providing thread-safe container operations
 		std::mutex m_queue_mx;
+		// the queue that holds bok::Latch (basically same as std::latch that will come with C++20)
+		// (the internal container is std::list, because bok::Latch is non-movable and non-copyable)
 		std::queue<bok::Latch<>, std::list<bok::Latch<>>> m_queue;
 
 	public:
@@ -114,7 +131,6 @@ namespace bok {
 		// false if the payload is not occupied (and the mutex is unlocked)
 		// does not guarantee 100% accuracy
 		bool Occupied() noexcept {
-			std::unique_lock queue_lock(m_queue_mx);
 			std::unique_lock payload_lock(m_payload_mx, std::defer_lock);
 			return !payload_lock.try_lock();
 		}
@@ -123,8 +139,8 @@ namespace bok {
 		// does not guarantee 100% accuracy
 		size_t Length() noexcept {
 			std::unique_lock queue_lock(m_queue_mx);
-			return m_queue.size();
-			return 0;
+			auto size = m_queue.size();
+			return size;
 		}
 
 		// returns the resource managed by the AccessQueue,
@@ -138,20 +154,20 @@ namespace bok {
 		// bypasses the access queue completely, and instead
 		// just tries to lock the mutex that's guarding the payload
 		LockedPayload GetPriorityAccess() {
-			// lock the payload mutex - and therefore also wait for access
-			// when mutex is acquired, lock the queue
-			// if the queue is not empty, wake up the thread that's first in the queue
-			// return, by constructing a LockedPayload that adopts the locked payload mutex
-			// and also unlock the queue mutex (when it falls out of scope)
+			// lock the payload
+			// (and now that the payload is locked...)
+			// if the queue is not empty, wake up the thread at the front
+			// return
 
-			m_payload_mx.lock();
+			std::unique_lock payload_lock(m_payload_mx);
 
 			std::unique_lock queue_lock(m_queue_mx);
-			if (m_queue.size() > 0) {
+
+			if (!m_queue.empty()) {
 				m_queue.front().Release();
 			}
 
-			return LockedPayload(m_payload, m_payload_mx);
+			return LockedPayload(m_payload, std::move(payload_lock));
 		}
 
 		// returns LockedPayload,
@@ -159,22 +175,48 @@ namespace bok {
 		// waits properly for access,
 		// gets put into the back of the queue
 		LockedPayload GetAccess() {
-			// lock the queue mutex
-			// if the queue is empty
-			//    try to lock the payload mutex
-			//    if it was locked successfully, return
-			//    else add self to queue, and wait... and release the queue lock afterwards????????
+			// lock the queue
+			// if the queue is not empty
+			//     push a latch to queue,
+			//     wait on the latch, with a callback that unlocks the queue
+			//     pop the latch from the queue (as now that the caller was notified it is its turn)
+			// else
+			//     unlock the queue
+			// endif
 			// 
+			// (now it's the caller's turn to wait on the payload)
+			// lock the payload
+			// 
+			// (now the caller has locked the payload)
+			// lock the queue
+			// if the queue is not empty
+			//     release the thread at the front of the queue
+			// 
+			// fin (this comment thing is outdated)
 
 			std::unique_lock queue_lock(m_queue_mx);
-			if (m_queue.size() > 0) {
+			std::unique_lock payload_lock(m_payload_mx, std::defer_lock);
 
+			if (!m_queue.empty()) {
+				m_queue.emplace();
+				m_queue.back().Wait([&queue_lock]() {queue_lock.unlock(); });
+				m_queue.pop();
+				queue_lock.lock();
+				payload_lock.lock();
 			}
-			else {
+			else if (!payload_lock.try_lock()) {
+				m_queue.emplace();
+				m_queue.back().Wait([&queue_lock]() {queue_lock.unlock(); });
+				m_queue.pop();
+				queue_lock.lock();
+				payload_lock.lock();
+			}
 
+			if (!m_queue.empty()) {
+				m_queue.front().Release();
 			}
-			
-			return LockedPayload(m_payload, m_payload_mx);
+
+			return LockedPayload(m_payload, std::move(payload_lock));
 		}
 
 	};
