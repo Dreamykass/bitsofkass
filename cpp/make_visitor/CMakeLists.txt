@@ -5,12 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-add_executable(make_visitor_proj main.cpp)
+add_executable(make_visitor_proj main.cpp make_visitor.hpp)
 
 
-
-find_path(RANG_INCLUDE_DIR NAMES rang.hpp PATH_SUFFIXES rang)
-include_directories(${RANG_INCLUDE_DIR})
+find_package(doctest CONFIG REQUIRED)
+target_link_libraries(make_visitor_proj PRIVATE doctest::doctest)
 
 
 
