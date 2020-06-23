@@ -1,0 +1,10 @@
+
+
+title = "TOML Example"
+
+[owner]
+name = "Tom"
+
+[hosts]
+current = "Danielle"
+others  = [ "Anna", "Jack" ]
