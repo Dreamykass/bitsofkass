@@ -6,7 +6,6 @@
 
 void pretty_print(std::string _color, std::string _message) {
   static std::mutex mutex;
-
   std::unique_lock ulock(mutex);
 
   if (_color == "r")
