@@ -1,0 +1,9 @@
+bin/
+obj/
+build/
+
+.vscode/
+.vs/
+
+bookmark-input/
+bookmark-output/
