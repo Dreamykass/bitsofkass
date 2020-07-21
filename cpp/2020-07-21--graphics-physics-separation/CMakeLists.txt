@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.12.0)
-project(separation VERSION 0.1.0)
+project(separation_proj VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
+set(sep_sources ${CMAKE_SOURCE_DIR}/src/main.cpp ${CMAKE_SOURCE_DIR}/src/graphics.cpp ${CMAKE_SOURCE_DIR}/src/physics.cpp)
+set(sep_headers ${CMAKE_SOURCE_DIR}/include/common.hpp ${CMAKE_SOURCE_DIR}/include/graphics.hpp ${CMAKE_SOURCE_DIR}/include/physics.hpp)
 
-add_executable(separation_exec ${CMAKE_SOURCE_DIR}/main.cpp)
-
+add_executable(separation_exec ${sep_sources} ${sep_headers})
+target_include_directories(separation_exec PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
