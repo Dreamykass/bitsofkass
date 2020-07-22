@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <thread>
 
 #include "common.hpp"
 #include "physics.hpp"
@@ -13,21 +14,22 @@ int main() {
   std::cout << "hello\n";
 
   std::chrono::steady_clock clock;
-  World world(2000ms);
-  Window window(1000ms);
+  World world(32ms);
+  Window window(16ms);
 
-  while (true) {
+  bool open = true;
+  while (open) {
     auto time_now = clock.now();
 
-    if (world.updatable.Ready(time_now)) {
+    if (world.m_updatable.Ready(time_now)) {
       UpdatePhysics(world);
-      std::cout << "--updated physics/world\n";
     }
 
-    if (window.updatable.Ready(time_now)) {
-      UpdateGraphics(world, window);
-      std::cout << "--updated graphics/window\n";
+    if (window.m_updatable.Ready(time_now)) {
+      UpdateGraphics(world, window, open);
     }
+
+    // std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
 
   std::cout << "bye\n";
