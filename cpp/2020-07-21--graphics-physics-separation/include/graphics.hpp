@@ -6,7 +6,7 @@
 struct Window {
   Updatable updatable;
 
-  Window(decltype(updatable.update_on_target) _update_on_target);
+  Window(decltype(updatable.update_after_ms) _update_after_ms);
 };
 
 struct World;
