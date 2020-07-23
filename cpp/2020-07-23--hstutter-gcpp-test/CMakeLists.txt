@@ -9,6 +9,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # help-paths-set.cmake is supposed to contain: 
 #      set(my_gcpp_path "path/to/gcpp")
 #      set(my_gsl_path "path/to/gcpp")
+# on my system they are like that, cause I 
+#      set(my_gcpp_path "${CMAKE_SOURCE_DIR}/../../../gcpp")
+#      set(my_gsl_path "${CMAKE_SOURCE_DIR}/../../../gcpp/submodules/gsl/include")
 include(${CMAKE_SOURCE_DIR}/help-paths-set.cmake)
 if((NOT DEFINED my_gcpp_path) OR (NOT DEFINED my_gsl_path))
   message(FATAL_ERROR "----either my_gcpp_path or my_gsl_path is not defined :(")
