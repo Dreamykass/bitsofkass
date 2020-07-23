@@ -11,16 +11,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #      set(my_gsl_path "path/to/gcpp")
 include(${CMAKE_SOURCE_DIR}/help-paths-set.cmake)
 if((NOT DEFINED my_gcpp_path) OR (NOT DEFINED my_gsl_path))
-  message(FATAL_ERROR "----my_gcpp_path is not defined :(")
+  message(FATAL_ERROR "----either my_gcpp_path or my_gsl_path is not defined :(")
 endif()
-if(NOT EXISTS "${my_gcpp_path}/deferred_heap.h")
-  message(FATAL_ERROR "----my_gcpp_path does not contain deferred_heap.h :(, and its value is: " ${my_gcpp_path})
+if((NOT EXISTS "${my_gcpp_path}/deferred_heap.h") OR (NOT EXISTS "${my_gsl_path}/gsl/gsl"))
+  message("----my_gcpp_path does not contain deferred_heap.h, and its value is: " ${my_gcpp_path})
+  message("----or my_gsl_path does not contain gsl/gsl, and its values is: " ${my_gsl_path})
+  message(FATAL_ERROR "----(look up)")
 endif()
 
 
 
 add_executable(gcpp_my_exec ${CMAKE_SOURCE_DIR}/main.cpp)
 target_include_directories(gcpp_my_exec PRIVATE ${my_gcpp_path})
+target_include_directories(gcpp_my_exec PRIVATE ${my_gsl_path})
 
 
 
