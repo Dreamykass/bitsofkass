@@ -5,12 +5,16 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # help-paths-set.cmake is supposed to contain:
-# - set(my_gcpp_path "path/to/gcpp")
-# - set(my_gsl_path "path/to/gcpp") on my system they are like the the following,
-# cause I have the repos I clone in one central folder and I also use the gsl
-# that gcpp gets cloned with 
-# - set(my_gcpp_path "${CMAKE_SOURCE_DIR}/../../../gcpp") 
-# - set(my_gsl_path "${CMAKE_SOURCE_DIR}/../../../gcpp/submodules/gsl/include")
+#
+# * set(my_gcpp_path "path/to/gcpp")
+# * set(my_gsl_path "path/to/gcpp")
+#
+# I have the repos I clone in one central folder and I also use the gsl that
+# gcpp gets cloned with, so on my system they are like this:
+#
+# * set(my_gcpp_path "${CMAKE_SOURCE_DIR}/../../../gcpp")
+# * set(my_gsl_path "${CMAKE_SOURCE_DIR}/../../../gcpp/submodules/gsl/include")
+#
 include(${CMAKE_SOURCE_DIR}/help-paths-set.cmake)
 
 if((NOT DEFINED my_gcpp_path) OR (NOT DEFINED my_gsl_path))
