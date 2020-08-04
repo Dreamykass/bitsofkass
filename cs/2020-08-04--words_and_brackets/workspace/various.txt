@@ -1,0 +1,29 @@
+
+outside
+
+(
+    round
+)
+<
+    pointy
+>
+[
+    square
+]
+{
+    moustache
+}
+inbetween
+(
+    nested
+    (
+        verynested
+        (
+            supernested
+        )
+    )
+    (
+        alsoverynested
+    )
+)
+outside
