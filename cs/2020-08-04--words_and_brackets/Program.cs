@@ -29,7 +29,7 @@ namespace WordsAndBrackets
 
             // bracketize
             Bracketize.Init();
-            var tokenList = Bracketize.Now(words, 0, words.Count, new Stack<Char>());
+            var tokenList = Bracketize.Now2(words, 0, words.Count, new Stack<Char>());
 
             Console.WriteLine("Bye.");
         }
