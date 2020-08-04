@@ -29,7 +29,35 @@ namespace WordsAndBrackets
 
             // bracketize
             Bracketize.Init();
-            var tokenList = Bracketize.Now2(words, 0, words.Count, new Stack<Char>());
+            var tokenList = Bracketize.Now2(words);
+
+            // tokens to file
+            {
+                List<String> indentedWords = new List<String>();
+                String indentation = "";
+
+                Action<List<Token>> printer = null;
+                printer = (List<Token> tokenL) =>
+                {
+                    foreach (var token in tokenL)
+                    {
+                        if (token.type == Token.Type.Word)
+                        {
+                            indentedWords.Add(indentation + token.wordString);
+                        }
+                        else if (token.type == Token.Type.TokenList)
+                        {
+                            indentation += "    ";
+                            printer(token.tokenList);
+                            indentation = indentation.Remove(indentation.Length - 4);
+                        }
+                    }
+                };
+
+                printer(tokenList);
+
+                File.WriteAllLines("output/finished.txt", indentedWords);
+            }
 
             Console.WriteLine("Bye.");
         }

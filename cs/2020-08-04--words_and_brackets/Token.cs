@@ -17,7 +17,7 @@ namespace WordsAndBrackets
 
         public String wordString;
 
-        public List<Token> tokenList;
+        public List<Token> tokenList = new List<Token>();
         public Char bracketType;
     }
 }

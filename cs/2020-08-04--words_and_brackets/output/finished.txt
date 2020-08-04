@@ -1,24 +1,14 @@
 outside
-(
     nested
-    (
         verynested
-        (
             supernested
             other
             stuff
-        )
         things
-    )
     foo
     bar
     stuff
-    (
         alsoverynested
         hey
         goodbye
-    )
-)
 outside
-
-
