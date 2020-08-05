@@ -1,0 +1,11 @@
+---
+PathToThing: "foo.bar"
+
+ErrorCodes:
+    000: "foo"
+    001: "bar"
+    007: "fez"
+    555: "boo"
+
+---
+
