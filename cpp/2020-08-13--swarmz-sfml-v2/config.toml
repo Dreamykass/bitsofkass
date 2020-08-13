@@ -1,0 +1,10 @@
+
+PerceptionRadius = 30.0
+SeparationWeight = 20.0
+AlignmentWeight = 2.0
+CohesionWeight = 1.0
+DeltaSeconds = 0.1
+RandomnessDeviation = 2.0
+ShapeRadius = 4.0
+OnKeyVelocityChange = 10.0
+BoidAmount = 200
