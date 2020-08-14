@@ -1,0 +1,14 @@
+SleepSeconds: 1
+Vids:
+  - Url: https://www.youtube.com/watch?v=
+    Title: target title
+    Artist: target artist
+    Album: target album
+    Year: 9999
+    TrackNum: 1
+  - Url:
+    Title:
+    Artist:
+    Album:
+    Year:
+    TrackNum:
