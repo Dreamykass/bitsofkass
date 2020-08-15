@@ -26,6 +26,7 @@ void renderer_f(sf::RenderWindow& window, std::mutex& window_mutex) {
       window.clear();
 
       window.draw(shape);
+
       if (shape.getPosition().x < static_cast<float>(window.getSize().x))
         shape.move({ 10.f, 10.f });
       else
@@ -36,6 +37,11 @@ void renderer_f(sf::RenderWindow& window, std::mutex& window_mutex) {
 
     if (!window.isOpen())
       break;
+
+    auto new_view = window.getDefaultView();
+    new_view.setSize(static_cast<sf::Vector2f>(window.getSize()));
+    new_view.setCenter(static_cast<sf::Vector2f>(window.getSize()) / 2.f);
+    window.setView(new_view);
 
     window.setActive(false);
     lock.unlock();
