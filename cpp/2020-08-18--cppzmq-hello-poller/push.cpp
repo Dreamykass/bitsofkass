@@ -1,3 +1,4 @@
+
 #define ZMQ_BUILD_DRAFT_API
 #include <winsock.h>
 #include <zmq.hpp>
@@ -14,22 +15,21 @@ int main() {
   out_poller.add(sock, zmq::event_flags::pollout);
   std::vector<zmq::poller_event<>> out_events(1);
 
-  const std::chrono::milliseconds timeout{ 100 };
-  auto buff = zmq::str_buffer("Hello, world");
+  const std::chrono::milliseconds timeout{ 400 };
+
+  std::cout << "give message to send: ";
+  std::string message;
+  std::getline(std::cin, message);
+  auto buff = zmq::buffer(message);
 
   std::cout << "sending...\n";
 
-  sock.send(buff, zmq::send_flags::none);
-
-  while (true) {
-
-    const auto nout = out_poller.wait_all(out_events, timeout);
-    if (!nout) {
-      std::cout << "output timeout, freakout" << std::endl;
-      break;
-    }
-
+  const auto nout = out_poller.wait_all(out_events, timeout);
+  if (!nout) {
+    std::cout << "timeout...\n";
+  } else {
     auto sres = out_events[0].socket.send(buff, zmq::send_flags::none);
+    std::cout << "sent the message\n";
   }
 
   std::cout << "done\n";

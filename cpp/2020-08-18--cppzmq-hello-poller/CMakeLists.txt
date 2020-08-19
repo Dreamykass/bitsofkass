@@ -20,6 +20,7 @@ find_package(cppzmq CONFIG REQUIRED)
 target_link_libraries(cppzmqhello_pull PRIVATE cppzmq cppzmq-static)
 
 
+
 set(dkasses_compile_options_msvc
     /MP /permissive /W4 /w14640 /w14242 /w14254 /w14263 /w14265 /w14287 
     /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 
