@@ -10,6 +10,10 @@ add_executable(cppzmqchat_exe
       ${CMAKE_SOURCE_DIR}/code/main.cpp
       ${CMAKE_SOURCE_DIR}/code/cppzmq_incl.hpp
       ${CMAKE_SOURCE_DIR}/code/networker.hpp
+      ${CMAKE_SOURCE_DIR}/code/work_incoming.cpp
+      ${CMAKE_SOURCE_DIR}/code/work_outgoing.cpp
+      ${CMAKE_SOURCE_DIR}/code/commands.hpp
+      ${CMAKE_SOURCE_DIR}/code/misc.hpp
       )
 
 
@@ -18,6 +22,10 @@ target_link_libraries(cppzmqchat_exe PRIVATE cppzmq cppzmq-static)
 
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(cppzmqchat_exe PRIVATE fmt::fmt fmt::fmt-header-only)
+
+find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
+target_link_libraries(cppzmqchat_exe 
+                      PRIVATE sfml-graphics FLAC OpenAL OpenGL Vorbis)
 
 target_include_directories(cppzmqchat_exe PRIVATE ${CMAKE_SOURCE_DIR}/code)
 
