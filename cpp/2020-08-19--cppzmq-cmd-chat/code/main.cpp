@@ -29,6 +29,8 @@ int main() {
   commands_map["set"] = cmmd::setport;
   commands_map["showaddr"] = cmmd::showaddr;
   commands_map["show"] = cmmd::showaddr;
+  commands_map["listpeers"] = cmmd::listpeers;
+  commands_map["list"] = cmmd::listpeers;
 
   while (true) {
     fmt::print("\n--------------------------\n");

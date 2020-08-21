@@ -29,7 +29,7 @@ namespace cmmd {
       auto [prot, rest] = split_string_by(netw.getaddr(), ':');
       auto [addr, _] = split_string_by(rest, ':');
       fmt::print("adding peer: {}\n", fmt::format("{}:{}:{}", prot, addr, arg));
-      netw.addpeer(addr + ":" + arg);
+      netw.addpeer(fmt::format("{}:{}:{}", prot, addr, arg));
     }
   }
   void rempeer(networker_t& netw, const std::string& arg) {
@@ -53,8 +53,15 @@ namespace cmmd {
     fmt::print("done\n");
   }
   void sendmess(networker_t& netw, const std::string& arg) {
-    fmt::print("sending message: {}", arg);
+    fmt::print("sending message: {}\n", arg);
     netw.sendmess(netw.getaddr() + " says " + arg);
+  }
+
+  void listpeers(networker_t& netw, const std::string&) {
+    fmt::print("peers: \n");
+    auto peers = netw.listpeers();
+    for (const auto& p : peers)
+      fmt::print(" - {}\n", p);
   }
 
 }

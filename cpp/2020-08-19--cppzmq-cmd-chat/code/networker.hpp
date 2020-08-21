@@ -77,14 +77,22 @@ public:
     auto _ = std::unique_lock(internal_mutex);
 
     std::vector<std::string> output_messages;
-    while (!incoming_messages.empty())
+
+    while (!incoming_messages.empty()) {
       output_messages.push_back(incoming_messages.back());
+      incoming_messages.pop_back();
+    }
 
     return output_messages;
   }
   void sendmess(std::string message) {
     auto _ = std::unique_lock(internal_mutex);
     outgoing_messages.push_back(message);
+  }
+
+  std::deque<std::string> listpeers() {
+    auto _ = std::unique_lock(internal_mutex);
+    return peers;
   }
 
 private:

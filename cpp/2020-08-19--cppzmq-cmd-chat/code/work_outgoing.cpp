@@ -19,25 +19,28 @@ void networker_t::outgoing_work() {
     {
       auto _ = std::unique_lock(internal_mutex);
 
-      // synchronize sockets with peers
       for (const auto& peer : peers) {
         if (!sockets.contains(peer)) {
           sockets[peer] =
             std::move(zmq::socket_t(context, zmq::socket_type::push));
-          sockets[peer].bind(peer);
+          poller.add(sockets[peer], zmq::event_flags::pollout);
+          sockets[peer].connect(peer);
         }
       }
     }
 
-    events.resize(sockets.size());
+    events.resize(100);
     const auto event_n = poller.wait_all(events, timeout);
 
     {
       auto _ = std::unique_lock(internal_mutex);
 
-      for (size_t i = 0; i < event_n; i++) {
-        auto buff = zmq::buffer("siema");
-        events[i].socket.send(buff);
+      while (!outgoing_messages.empty()) {
+        for (size_t i = 0; i < event_n; i++) {
+          auto buff = zmq::buffer(outgoing_messages.back());
+          events[i].socket.send(buff);
+        }
+        outgoing_messages.pop_back();
       }
     }
   }
