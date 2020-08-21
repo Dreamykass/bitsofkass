@@ -19,6 +19,7 @@ void networker_t::incoming_work() {
 
   while (app_running.load() == true) {
 
+    std::this_thread::sleep_for(std::chrono::milliseconds{ 10 });
     events.resize(100);
     const auto event_n = poller.wait_all(events, timeout);
 
