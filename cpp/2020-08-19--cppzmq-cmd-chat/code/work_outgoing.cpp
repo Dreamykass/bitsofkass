@@ -29,11 +29,17 @@ void networker_t::outgoing_work() {
       }
     }
 
-    std::this_thread::sleep_for(std::chrono::milliseconds{ 10 });
-    events.resize(100);
-    const auto event_n = poller.wait_all(events, timeout);
-
+    bool outgoing_messages_is_empty;
     {
+      auto _ = std::unique_lock(internal_mutex);
+      outgoing_messages_is_empty = outgoing_messages.empty();
+    }
+
+    if (!outgoing_messages_is_empty) {
+
+      events.resize(100);
+      const auto event_n = poller.wait_all(events, timeout);
+
       auto _ = std::unique_lock(internal_mutex);
 
       while (!outgoing_messages.empty()) {
