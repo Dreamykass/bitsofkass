@@ -49,6 +49,8 @@ void networker_t::outgoing_work() {
         }
         outgoing_messages.pop_back();
       }
+    } else {
+      std::this_thread::sleep_for(std::chrono::milliseconds{ 1 });
     }
   }
 }
