@@ -7,23 +7,24 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 add_executable(cppzmqchat_exe
-      ${CMAKE_SOURCE_DIR}/code/_main.cpp
-      ${CMAKE_SOURCE_DIR}/code/misc.hpp
-      ${CMAKE_SOURCE_DIR}/code/shared_data.hpp
+      ${CMAKE_SOURCE_DIR}/code-misc/_main.cpp
+      ${CMAKE_SOURCE_DIR}/code-misc/make_visitor.hpp
+      ${CMAKE_SOURCE_DIR}/code-misc/misc.hpp
 
-      ${CMAKE_SOURCE_DIR}/code/chatgui.hpp
-      
-      ${CMAKE_SOURCE_DIR}/code/event_internal.hpp
-      ${CMAKE_SOURCE_DIR}/code/event_message.hpp
+      ${CMAKE_SOURCE_DIR}/code-app/chat_gui.hpp
+      ${CMAKE_SOURCE_DIR}/code-app/shared_data.hpp
 
-      ${CMAKE_SOURCE_DIR}/code/work_incoming.hpp
-      ${CMAKE_SOURCE_DIR}/code/work_outgoing.hpp
+      ${CMAKE_SOURCE_DIR}/code-app/event_internal.hpp
+      ${CMAKE_SOURCE_DIR}/code-app/event_message.hpp
+
+      ${CMAKE_SOURCE_DIR}/code-app/work_incoming.hpp
+      ${CMAKE_SOURCE_DIR}/code-app/work_outgoing.hpp
 
       ${CMAKE_SOURCE_DIR}/resources/form.txt
       )
 
-target_include_directories(cppzmqchat_exe PRIVATE ${CMAKE_SOURCE_DIR}/code)
-
+target_include_directories(cppzmqchat_exe PRIVATE ${CMAKE_SOURCE_DIR}/code-app)
+target_include_directories(cppzmqchat_exe PRIVATE ${CMAKE_SOURCE_DIR}/code-misc)
 
 
 find_package(cppzmq CONFIG REQUIRED)
@@ -34,7 +35,7 @@ target_link_libraries(cppzmqchat_exe
                       PRIVATE unofficial::concurrentqueue::concurrentqueue)
 
 find_package(fmt CONFIG REQUIRED)
-target_link_libraries(cppzmqchat_exe PRIVATE fmt::fmt fmt::fmt-header-only)
+target_link_libraries(cppzmqchat_exe PRIVATE fmt::fmt)
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 target_link_libraries(cppzmqchat_exe 
@@ -42,6 +43,11 @@ target_link_libraries(cppzmqchat_exe
 
 find_package(TGUI CONFIG REQUIRED)
 target_link_libraries(cppzmqchat_exe PRIVATE tgui)
+
+set(SPDLOG_FMT_EXTERNAL)
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(cppzmqchat_exe 
+                      PRIVATE spdlog::spdlog)
 
 
 

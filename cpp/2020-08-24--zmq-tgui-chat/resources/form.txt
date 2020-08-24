@@ -21,14 +21,6 @@ Renderer.1 {
 }
 
 Renderer.2 {
-    backgroundcolor = transparent;
-    bordercolor = #3C3C3C;
-    borders = (0, 0, 0, 0);
-    textcolor = #3C3C3C;
-    texturebackground = None;
-}
-
-Renderer.3 {
     backgroundcolor = #F5F5F5;
     backgroundcolordisabled = #E6E6E6;
     backgroundcolorhover = white;
@@ -48,6 +40,14 @@ Renderer.3 {
     texturedisabled = None;
     texturefocused = None;
     texturehover = None;
+}
+
+Renderer.3 {
+    backgroundcolor = transparent;
+    bordercolor = #3C3C3C;
+    borders = (0, 0, 0, 0);
+    textcolor = #3C3C3C;
+    texturebackground = None;
 }
 
 ChatBox.ChatBoxMessages {
@@ -96,21 +96,21 @@ Label.LabelIPPort {
     Size = (72.2, 18);
     Text = "IP and Port";
     TextSize = 13;
-    renderer = &2;
+    renderer = &3;
 }
 
 EditBox.EditBoxIP {
     Position = (520, 80);
     Size = (170, 22);
     TextSize = 13;
-    renderer = &3;
+    renderer = &2;
 }
 
 EditBox.EditBoxPort {
     Position = (700, 80);
     Size = (80, 22);
     TextSize = 13;
-    renderer = &3;
+    renderer = &2;
 }
 
 Label.LabelAppTitle {
@@ -119,35 +119,35 @@ Label.LabelAppTitle {
     Size = (257.2, 27.6774);
     Text = "CPPZMQ/TGUI chat thing";
     TextSize = 21;
-    renderer = &2;
+    renderer = &3;
 }
 
 EditBox.EditBoxMessageInput {
     Position = (20, 560);
     Size = (480, 22);
     TextSize = 13;
-    renderer = &3;
+    renderer = &2;
 }
 
 EditBox.EditBoxPeer {
-    Position = (520, 500);
+    Position = (520, 470);
     Size = (260, 22);
     TextSize = 13;
-    renderer = &3;
+    renderer = &2;
 }
 
 Button.ButtonPeerAdd {
-    Position = (520, 530);
+    Position = (520, 500);
     Size = (130, 22);
-    Text = Button;
+    Text = "Add Peer";
     TextSize = 13;
     renderer = &1;
 }
 
 Button.ButtonPeerRemove {
-    Position = (650, 470);
+    Position = (650, 500);
     Size = (130, 22);
-    Text = Button;
+    Text = "Remove Peer";
     TextSize = 13;
     renderer = &1;
 }
