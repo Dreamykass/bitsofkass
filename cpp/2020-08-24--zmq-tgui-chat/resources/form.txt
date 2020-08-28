@@ -21,6 +21,14 @@ Renderer.1 {
 }
 
 Renderer.2 {
+    backgroundcolor = transparent;
+    bordercolor = #3C3C3C;
+    borders = (0, 0, 0, 0);
+    textcolor = #3C3C3C;
+    texturebackground = None;
+}
+
+Renderer.3 {
     backgroundcolor = #F5F5F5;
     backgroundcolordisabled = #E6E6E6;
     backgroundcolorhover = white;
@@ -40,14 +48,6 @@ Renderer.2 {
     texturedisabled = None;
     texturefocused = None;
     texturehover = None;
-}
-
-Renderer.3 {
-    backgroundcolor = transparent;
-    bordercolor = #3C3C3C;
-    borders = (0, 0, 0, 0);
-    textcolor = #3C3C3C;
-    texturebackground = None;
 }
 
 ChatBox.ChatBoxMessages {
@@ -70,8 +70,8 @@ ChatBox.ChatBoxMessages {
 ListBox.ListBoxPeers {
     ItemHeight = 20;
     MaximumItems = 0;
-    Position = (520, 110);
-    Size = (260, 352);
+    Position = (520, 190);
+    Size = (260, 272);
     TextSize = 13;
 
     Renderer {
@@ -86,31 +86,49 @@ ListBox.ListBoxPeers {
         textcolor = #3C3C3C;
         textcolorhover = black;
         texturebackground = None;
+
+        scrollbar {
+            arrowbackgroundcolor = #F5F5F5;
+            arrowbackgroundcolorhover = white;
+            arrowcolor = #3C3C3C;
+            arrowcolorhover = black;
+            texturearrowdown = None;
+            texturearrowdownhover = None;
+            texturearrowup = None;
+            texturearrowuphover = None;
+            texturethumb = None;
+            texturethumbhover = None;
+            texturetrack = None;
+            texturetrackhover = None;
+            thumbcolor = #DCDCDC;
+            thumbcolorhover = #E6E6E6;
+            trackcolor = #F5F5F5;
+        }
     }
 }
 
 Label.LabelIPPort {
     AutoSize = true;
-    Position = (520, 60);
+    Position = (520, 120);
     ScrollbarPolicy = Never;
     Size = (72.2, 18);
     Text = "IP and Port";
     TextSize = 13;
-    renderer = &3;
+    renderer = &2;
 }
 
 EditBox.EditBoxIP {
-    Position = (520, 80);
-    Size = (170, 22);
+    Position = (520, 140);
+    Size = (180, 22);
     TextSize = 13;
-    renderer = &2;
+    renderer = &3;
 }
 
 EditBox.EditBoxPort {
-    Position = (700, 80);
+    Position = (700, 140);
     Size = (80, 22);
     TextSize = 13;
-    renderer = &2;
+    renderer = &3;
 }
 
 Label.LabelAppTitle {
@@ -119,21 +137,21 @@ Label.LabelAppTitle {
     Size = (257.2, 27.6774);
     Text = "CPPZMQ/TGUI chat thing";
     TextSize = 21;
-    renderer = &3;
+    renderer = &2;
 }
 
 EditBox.EditBoxMessageInput {
     Position = (20, 560);
-    Size = (480, 22);
+    Size = (478, 22);
     TextSize = 13;
-    renderer = &2;
+    renderer = &3;
 }
 
 EditBox.EditBoxPeer {
     Position = (520, 470);
     Size = (260, 22);
     TextSize = 13;
-    renderer = &2;
+    renderer = &3;
 }
 
 Button.ButtonPeerAdd {
@@ -150,4 +168,39 @@ Button.ButtonPeerRemove {
     Text = "Remove Peer";
     TextSize = 13;
     renderer = &1;
+}
+
+Button.ButtonPing {
+    Position = (520, 530);
+    Size = (130, 22);
+    Text = "Ping Peers";
+    TextSize = 13;
+    renderer = &1;
+}
+
+Label.LabelPeers {
+    AutoSize = true;
+    Position = (520, 170);
+    ScrollbarPolicy = Never;
+    Size = (39.2, 18);
+    Text = Peers;
+    TextSize = 13;
+    renderer = &2;
+}
+
+EditBox.EditBoxName {
+    Position = (520, 90);
+    Size = (260, 22);
+    TextSize = 13;
+    renderer = &3;
+}
+
+Label.LabelName {
+    AutoSize = true;
+    Position = (520, 70);
+    ScrollbarPolicy = Never;
+    Size = (66.2, 18);
+    Text = Nickname;
+    TextSize = 13;
+    renderer = &2;
 }
