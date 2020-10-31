@@ -5,23 +5,24 @@ use std::rc::Rc;
 
 // -----------------------------------------------------------------------------------------------
 
-pub type StateQueue = VecDeque<Rc<RefCell<dyn State>>>;
+pub type StateQueue<SharedType> = VecDeque<Rc<RefCell<dyn State<SharedType>>>>;
 
-pub trait State {
-    fn run(&mut self, _: &mut StateQueue);
+pub trait State<SharedType> {
+    fn run(&mut self, _: &mut StateQueue<SharedType>, _: &mut SharedType);
 }
 
 // -----------------------------------------------------------------------------------------------
 
-#[derive(Default)]
-pub struct Machine {
-    queue: StateQueue,
+pub struct Machine<SharedType> {
+    queue: StateQueue<SharedType>,
+    shared: SharedType,
 }
 
-impl Machine {
-    pub fn new() -> Machine {
+impl<SharedType> Machine<SharedType> {
+    pub fn new(shared: SharedType) -> Machine<SharedType> {
         Machine {
             queue: VecDeque::new(),
+            shared,
         }
     }
 
@@ -35,7 +36,11 @@ impl Machine {
 
     pub fn run_once(&mut self) {
         if let Some(state) = self.queue.back() {
-            state.clone().deref().borrow_mut().run(&mut self.queue);
+            state
+                .clone()
+                .deref()
+                .borrow_mut()
+                .run(&mut self.queue, &mut self.shared);
         }
     }
 
@@ -45,12 +50,21 @@ impl Machine {
         }
     }
 
-    pub fn push(&mut self, state: Rc<RefCell<dyn State>>) {
+    pub fn push(&mut self, state: Rc<RefCell<dyn State<SharedType>>>) {
         self.queue.push_front(state);
+    }
+
+    pub fn borrow_shared(&self) -> &SharedType {
+        &self.shared
+    }
+
+    pub fn borrow_mut_shared(&mut self) -> &mut SharedType {
+        &mut self.shared
     }
 }
 
 // -----------------------------------------------------------------------------------------------
+// // // doesn't work, maybe come back to it later, maybe not
 
 // struct StateFromFnMut {
 //     closure: Box<dyn FnMut(&mut StateQueue)>,
@@ -60,6 +74,7 @@ impl Machine {
 //     fn run(&mut self, state_queue: &mut StateQueue) {
 //         // self.closure(&mut state_queue);
 //         (*self.closure)(&mut state_queue);
+//         // ????????
 //     }
 // }
 //
