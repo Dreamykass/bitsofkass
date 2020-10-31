@@ -13,6 +13,7 @@ pub trait State {
 
 // -----------------------------------------------------------------------------------------------
 
+#[derive(Default)]
 pub struct Machine {
     queue: StateQueue,
 }
@@ -51,20 +52,21 @@ impl Machine {
 
 // -----------------------------------------------------------------------------------------------
 
-// struct StateFromClosure {
+// struct StateFromFnMut {
 //     closure: Box<dyn FnMut(&mut StateQueue)>,
 // }
 //
-// impl State for StateFromClosure {
-//     fn run(&mut self, state_queue: &mut VecDeque<Rc<RefCell<dyn State>>>) {
-//         self.closure.call;
+// impl State for StateFromFnMut {
+//     fn run(&mut self, state_queue: &mut StateQueue) {
+//         // self.closure(&mut state_queue);
+//         (*self.closure)(&mut state_queue);
 //     }
 // }
 //
 // impl Machine {
 //     pub fn push_from_fnmut(&mut self, closure: Box<dyn FnMut(&mut StateQueue)>) {}
 //
-//     pub fn push_from_fnonce(&mut self, closure: Fn(&mut StateQueue)) {}
+//     // pub fn push_from_fnonce(&mut self, closure: Fn(&mut StateQueue)) {}
 // }
 
 // -----------------------------------------------------------------------------------------------

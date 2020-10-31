@@ -1,11 +1,10 @@
-mod machine;
+pub mod machine;
 
 #[cfg(test)]
 mod tests {
     use crate::machine::{Machine, State, StateQueue};
-    use std::borrow::{Borrow, BorrowMut};
     use std::cell::RefCell;
-    use std::ops::{Add, AddAssign, Deref};
+    use std::ops::{AddAssign, Deref};
     use std::rc::Rc;
 
     #[test]
