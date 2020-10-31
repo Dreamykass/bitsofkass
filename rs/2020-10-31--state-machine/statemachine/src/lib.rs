@@ -43,7 +43,7 @@ mod tests {
     fn test_with_shared_data() {
         let mut machine = Machine::new(1);
         assert!(machine.is_empty());
-        assert_eq!(*machine.borrow_shared(), 1);
+        assert_eq!(*machine.shared(), 1);
 
         struct TestState {}
 
@@ -58,12 +58,12 @@ mod tests {
         assert!(!machine.is_empty());
         machine.run_all();
         assert!(machine.is_empty());
-        assert_eq!(*machine.borrow_shared(), 2);
+        assert_eq!(*machine.shared(), 2);
 
         machine.push(Rc::new(RefCell::new(TestState {})));
         machine.push(Rc::new(RefCell::new(TestState {})));
         machine.run_all();
-        assert_eq!(*machine.borrow_shared(), 4);
+        assert_eq!(*machine.shared(), 4);
         assert!(machine.is_empty());
     }
 }

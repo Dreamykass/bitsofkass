@@ -1,6 +1,5 @@
 use std::cell::RefCell;
 use std::collections::VecDeque;
-use std::ops::Deref;
 use std::rc::Rc;
 
 // -----------------------------------------------------------------------------------------------
@@ -38,7 +37,6 @@ impl<SharedType> Machine<SharedType> {
         if let Some(state) = self.queue.back() {
             state
                 .clone()
-                .deref()
                 .borrow_mut()
                 .run(&mut self.queue, &mut self.shared);
         }
@@ -54,11 +52,11 @@ impl<SharedType> Machine<SharedType> {
         self.queue.push_front(state);
     }
 
-    pub fn borrow_shared(&self) -> &SharedType {
+    pub fn shared(&self) -> &SharedType {
         &self.shared
     }
 
-    pub fn borrow_mut_shared(&mut self) -> &mut SharedType {
+    pub fn shared_mut(&mut self) -> &mut SharedType {
         &mut self.shared
     }
 }
