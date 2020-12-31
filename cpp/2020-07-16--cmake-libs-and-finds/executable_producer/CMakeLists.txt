@@ -20,6 +20,11 @@ target_link_libraries(executable_producer_turtle.exe_turtle PRIVATE ${elib_doggy
 target_include_directories(executable_producer_turtle.exe_turtle PRIVATE "${CMAKE_SOURCE_DIR}/../external_lib")
 
 
+find_library(elib_parrot_path REQUIRED NAMES external_lib_parrot.elib_parrot PATHS "${CMAKE_SOURCE_DIR}/../external_lib_shared/build/Debug")
+target_link_libraries(executable_producer_turtle.exe_turtle PRIVATE ${elib_parrot_path})
+target_include_directories(executable_producer_turtle.exe_turtle PRIVATE "${CMAKE_SOURCE_DIR}/../external_lib_shared")
+
+
 #find_package(elib_doggy_path REQUIRED NAMES external_lib_doggy.elib_doggy HINTS "${CMAKE_SOURCE_DIR}/../external_lib")
 #target_link_libraries(executable_producer_turtle.exe_turtle PRIVATE "${elib_doggy_path}")
 #target_include_directories(executable_producer_turtle.exe_turtle PRIVATE "${elib_doggy_path}")
