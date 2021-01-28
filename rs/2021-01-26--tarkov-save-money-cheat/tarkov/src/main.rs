@@ -60,7 +60,13 @@ fn main() {
             .unwrap()
             .iter_mut()
             .filter(|item| {
-                item.get("_tpl").unwrap().as_str().unwrap() == "5449016a4bdc2d6f028b456f"
+                [
+                    "5449016a4bdc2d6f028b456f", // rouble
+                    "5696686a4bdc2da3298b456a",
+                    "569668774bdc2da2298b4568",
+                ]
+                .iter()
+                .any(|it| *it == item.get("_tpl").unwrap().as_str().unwrap())
             })
             .map(|item| {
                 let item = item.get_mut("upd").unwrap().as_object_mut().unwrap();
