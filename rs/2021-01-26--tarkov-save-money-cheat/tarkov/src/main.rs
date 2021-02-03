@@ -69,8 +69,11 @@ fn main() {
                 .any(|it| *it == item.get("_tpl").unwrap().as_str().unwrap())
             })
             .map(|item| {
-                let item = item.get_mut("upd").unwrap().as_object_mut().unwrap();
-                item["StackObjectsCount"] = Value::Number(Number::from(500_000));
+                if let Some(upd) = item.get_mut("upd") {
+                    if let Some(stack) = upd.as_object_mut() {
+                        stack["StackObjectsCount"] = Value::Number(Number::from(500_000));
+                    }
+                }
             })
             .count();
 
