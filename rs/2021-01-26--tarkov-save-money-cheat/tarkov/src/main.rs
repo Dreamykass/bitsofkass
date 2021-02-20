@@ -69,11 +69,23 @@ fn main() {
                 .any(|it| *it == item.get("_tpl").unwrap().as_str().unwrap())
             })
             .map(|item| {
-                if let Some(upd) = item.get_mut("upd") {
+                if item.get("_tpl").unwrap().as_str().unwrap() == "5449016a4bdc2d6f028b456f" {
+                    if let Some(upd) = item.get_mut("upd") {
+                        if let Some(stack) = upd.as_object_mut() {
+                            stack["StackObjectsCount"] = Value::Number(Number::from(500_000));
+                        }
+                    }
+                } else if let Some(upd) = item.get_mut("upd") {
                     if let Some(stack) = upd.as_object_mut() {
-                        stack["StackObjectsCount"] = Value::Number(Number::from(500_000));
+                        stack["StackObjectsCount"] = Value::Number(Number::from(50_000));
                     }
                 }
+
+                // if let Some(upd) = item.get_mut("upd") {
+                //     if let Some(stack) = upd.as_object_mut() {
+                //         stack["StackObjectsCount"] = Value::Number(Number::from(500_000));
+                //     }
+                // }
             })
             .count();
 
