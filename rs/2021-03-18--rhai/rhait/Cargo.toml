@@ -1,0 +1,12 @@
+[package]
+name = "rhait"
+version = "0.1.0"
+authors = ["Damian Grüner <grunerdamian@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rhai = "0.19.14"
+flexi_logger = "0.17"
+log = "0.4"
