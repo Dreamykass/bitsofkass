@@ -8,4 +8,4 @@ plz don't judge the code
 
 
 gif:
-![alt text](https://thumbs.gfycat.com/SmoothScrawnyGrassspider-mobile.mp4)
+<https://thumbs.gfycat.com/SmoothScrawnyGrassspider-mobile.mp4>
