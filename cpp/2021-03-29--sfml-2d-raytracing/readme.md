@@ -6,3 +6,6 @@ etc
 
 plz don't judge the code
 
+
+gif:
+![alt text](https://thumbs.gfycat.com/SmoothScrawnyGrassspider-mobile.mp4)

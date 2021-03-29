@@ -72,6 +72,9 @@ struct Light {
   int x;
   int y;
   float radius;
+  float r;
+  float g;
+  float b;
 };
 
 int main() {
@@ -90,9 +93,10 @@ int main() {
 
   auto light_under_mouse = 0;
   std::vector<Light> lights;
-  lights.push_back(Light{ 200, 200, 50.f });
-  lights.push_back(Light{ 200, 200, 100.f });
-  lights.push_back(Light{ 300, 500, 100.f });
+  lights.push_back(Light{ 200, 200, 100.f, 255, 10, 10 });
+  lights.push_back(Light{ 200, 200, 200.f, 255, 255, 255 });
+  lights.push_back(Light{ 300, 500, 200.f, 100, 255, 60 });
+  lights.push_back(Light{ 400, 300, 200.f, 4, 255, 255 });
 
   std::vector<Line> walls;
   walls.push_back(Line{ { 0, 0 }, { 100, 200 } });
@@ -135,7 +139,12 @@ int main() {
       for (auto y = 0; y < window_y; y++) {
         auto& pixel = pixels[window_x * x + y].color;
         pixel = sf::Color(0, 0, 0);
-        auto intensity = 0.f;
+
+        // auto intensity = 0.f;
+        auto r = 0.f;
+        auto g = 0.f;
+        auto b = 0.f;
+
         for (auto light : lights) {
           auto d = dist(light.x, light.y, x, y);
           if (d < light.radius) {
@@ -145,11 +154,22 @@ int main() {
                 intersects_through_any = true;
               }
             }
-            if (!intersects_through_any)
-              intensity += (d / light.radius) * 255 * -1;
+            if (!intersects_through_any) {
+              // intensity += (d / light.radius) * 255 * -1;
+              r +=
+                (((light.radius - d) / light.radius) * (light.r / 255) * 255);
+              g +=
+                (((light.radius - d) / light.radius) * (light.g / 255) * 255);
+              b +=
+                (((light.radius - d) / light.radius) * (light.b / 255) * 255);
+              // 0 += 50 / 200
+            }
           }
         }
-        pixel = sf::Color(intensity, intensity, intensity);
+        // pixel = sf::Color(r, g, b);
+        pixel = sf::Color(std::clamp(r, 0.f, 255.f),
+                          std::clamp(g, 0.f, 255.f),
+                          std::clamp(b, 0.f, 255.f));
       }
     }
 
