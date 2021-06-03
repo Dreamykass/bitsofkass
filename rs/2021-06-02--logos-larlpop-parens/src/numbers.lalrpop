@@ -8,11 +8,10 @@ extern {
     type Location = usize;
 
     enum Token {
-        ParenLeft => Token::ParenLeft,
-    
+        ParenLeft  => Token::ParenLeft,
         ParenRight => Token::ParenRight,
-    
-        Number => Token::Number,
+
+        Number => Token::Number(i32),
 
         Comma => Token::Comma,
     }
@@ -36,7 +35,7 @@ pub ListOrSingle: SingleTokenOrVec = {
 };
 
 pub Complete: SingleTokenOrVec = {
-    Number => SingleTokenOrVec::TokenSingle(<>),
+    // Number => SingleTokenOrVec::TokenSingle(<>),
     Paren<ListOrSingle> => <>,
 };
 

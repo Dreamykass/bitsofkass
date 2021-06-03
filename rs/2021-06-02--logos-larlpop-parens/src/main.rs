@@ -6,8 +6,7 @@ use lalrpop_util::lalrpop_mod;
 lalrpop_mod!(pub numbers);
 
 #[derive(logos::Logos, Debug, PartialEq, Clone, Copy)]
-pub enum Token {
-    // Tokens can be literal strings, of any length.
+pub enum LogosToken {
     #[token("(")]
     ParenLeft,
 
@@ -26,6 +25,14 @@ pub enum Token {
 }
 
 #[derive(Debug, PartialEq, Clone)]
+pub enum Token {
+    ParenLeft,
+    ParenRight,
+    Comma,
+    Number(i32),
+}
+
+#[derive(Debug, PartialEq, Clone)]
 pub enum SingleTokenOrVec {
     TokenSingle(Token),
     TokenVec(Vec<SingleTokenOrVec>),
@@ -36,25 +43,32 @@ fn main() {
     // let source = "(, (5), (((2))), (6), (5), (6), )";
     let source = "(, (33), (66), (, (88), (33), (99), ), )";
 
-    let mut lex = Token::lexer(source);
-    let mut lexed = Vec::<Option<Result<(usize, Token, usize), ()>>>::new();
+    let mut lex = LogosToken::lexer(source);
+    let mut lexed = Vec::<(usize, Token, usize)>::new();
 
     println!("\nlexed:");
     while let Some(t) = lex.next() {
         println!("  '{}' - {:?}", lex.slice(), t,);
-        lexed.push(Some(Ok((lex.span().start, t, lex.span().end))));
+        let t = match t {
+            LogosToken::ParenLeft => Some(Token::ParenLeft),
+            LogosToken::ParenRight => Some(Token::ParenRight),
+            LogosToken::Comma => Some(Token::Comma),
+            LogosToken::Number => Some(Token::Number(lex.slice().parse().unwrap())),
+            _ => None,
+        };
+        if let Some(t) = t {
+            lexed.push((lex.span().start, t, lex.span().end));
+        }
     }
 
-    let lex = Token::lexer(source);
+    println!("\nlexed2:");
+    for t in &lexed {
+        println!("{:?}", t.1);
+    }
 
     println!("\nparsed result:");
-    let par = numbers::CompleteParser::new().parse(lex.spanned().map(|(t, r)| (r.start, t, r.end)));
+    let par = numbers::CompleteParser::new().parse(lexed.into_iter().map(|x| x));
     println!("  {:?}", par);
-
-    println!("\nparsed iter?:");
-    for x in par {
-        println!("  {:?}", x);
-    }
 
     println!("\n");
 }
