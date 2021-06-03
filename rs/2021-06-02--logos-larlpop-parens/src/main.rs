@@ -1,8 +1,7 @@
-use logos::Logos;
-// #[macro_use]
-// extern crate lalrpop_util;
-
 use lalrpop_util::lalrpop_mod;
+use logos::Logos;
+use serde::{Deserialize, Serialize};
+
 lalrpop_mod!(pub numbers);
 
 #[derive(logos::Logos, Debug, PartialEq, Clone, Copy)]
@@ -24,7 +23,7 @@ pub enum LogosToken {
     Error,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum Token {
     ParenLeft,
     ParenRight,
@@ -32,7 +31,7 @@ pub enum Token {
     Number(i32),
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub enum SingleTokenOrVec {
     TokenSingle(Token),
     TokenVec(Vec<SingleTokenOrVec>),
@@ -69,6 +68,9 @@ fn main() {
     println!("\nparsed result:");
     let par = numbers::CompleteParser::new().parse(lexed.into_iter().map(|x| x));
     println!("  {:?}", par);
+
+    println!("\njson:");
+    println!("{}", serde_json::to_string_pretty(&par.unwrap()).unwrap());
 
     println!("\n");
 }
