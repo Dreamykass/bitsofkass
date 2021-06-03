@@ -1,0 +1,46 @@
+use crate::Token;
+use crate::SingleTokenOrVec;
+
+grammar;
+
+extern {
+    type Error = ();
+    type Location = usize;
+
+    enum Token {
+        ParenLeft => Token::ParenLeft,
+    
+        ParenRight => Token::ParenRight,
+    
+        Number => Token::Number,
+
+        Comma => Token::Comma,
+    }
+}
+
+
+Paren<T> = ParenLeft <T> ParenRight;
+
+pub Single = {
+    Number,
+    Paren<Single>,
+};
+
+pub List: Vec<SingleTokenOrVec> = {
+    (Comma <(<Paren<ListOrSingle>> Comma)+>) => <>
+};
+
+pub ListOrSingle: SingleTokenOrVec = {
+    Single  => SingleTokenOrVec::TokenSingle(<>),
+    List    => SingleTokenOrVec::TokenVec(<>),
+};
+
+pub Complete: SingleTokenOrVec = {
+    Number => SingleTokenOrVec::TokenSingle(<>),
+    Paren<ListOrSingle> => <>,
+};
+
+
+
+
+
