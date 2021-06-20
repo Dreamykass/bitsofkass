@@ -29,6 +29,7 @@ pub enum Token {
     ParenRight,
     Comma,
     Number(i32),
+    Foo(String),
 }
 
 #[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
