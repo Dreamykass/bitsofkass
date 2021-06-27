@@ -26,6 +26,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(OpenCV REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -34,10 +35,15 @@ set(PROJECT_SOURCES
         mainwindow.ui
 )
 
+qt6_wrap_ui(UIS_HDRS
+    mainwindow.ui
+)
+
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(2021-06-27--qt-opencv-grayscale
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ${UIS_HDRS}
     )
 else()
     if(ANDROID)
@@ -52,6 +58,8 @@ else()
 endif()
 
 target_link_libraries(2021-06-27--qt-opencv-grayscale PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+include_directories(${OpenCV_INCLUDE_DIRS})
+target_link_libraries(2021-06-27--qt-opencv-grayscale PRIVATE ${OpenCV_LIBS})
 
 set_target_properties(2021-06-27--qt-opencv-grayscale PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

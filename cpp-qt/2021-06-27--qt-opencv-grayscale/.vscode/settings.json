@@ -1,5 +1,6 @@
 {
     "cmake.configureSettings": {
+        "OpenCV_DIR": "D:/Code/__cpp-libs/opencv/build",
         "Qt6_DIR": "C:/QT/6.1.1/msvc2019_64/lib/cmake/Qt6",
         "Qt6Widgets_DIR": "C:/QT/6.1.1/msvc2019_64/lib/cmake/Qt6Widgets",
         "Qt6WidgetsTools_DIR": "C:/QT/6.1.1/msvc2019_64/lib/cmake/Qt6WidgetsTools",
