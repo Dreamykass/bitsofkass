@@ -1,0 +1,12 @@
+{
+    "cmake.configureSettings": {
+        "OpenCV_DIR": "D:/Code/__cpp-libs/opencv/build",
+        "Qt_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5",
+        "QT_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5",
+        "Qt5_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5",
+        "Qt5Widgets_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5Widgets",
+        "Qt5WidgetsTools_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5WidgetsTools",
+        "Qt5CoreTools_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5CoreTools",
+        "Qt5GuiTools_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5GuiTools",
+    },
+}
