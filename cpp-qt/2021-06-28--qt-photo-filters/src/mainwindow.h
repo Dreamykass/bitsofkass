@@ -32,6 +32,8 @@ private slots:
 
   void on_checkBoxNoBlue_toggled(bool checked);
 
+  void on_spinBoxSize_valueChanged(double arg1);
+
 private:
   void refreshFromModel();
 

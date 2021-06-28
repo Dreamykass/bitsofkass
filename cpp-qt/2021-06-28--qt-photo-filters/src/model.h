@@ -13,4 +13,5 @@ struct Model {
   bool noRed = false;
   bool noGreen = false;
   bool noBlue = false;
+  double sizeModifier = 1.0;
 };

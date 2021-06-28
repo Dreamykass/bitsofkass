@@ -64,17 +64,10 @@ void MainWindow::refreshFromModel() {
     auto pixmap = QPixmap::fromImage(qt_image);
     Q_ASSERT(!pixmap.isNull());
 
-    ui->imageOriginal->setPixmap(pixmap);
+    int w = ui->imageOriginal->width();
+    int h = ui->imageOriginal->height();
+    ui->imageOriginal->setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
   }
-
-  // log the model
-  // {
-  //   qDebug() << "model.grayscale = " << model.grayscale;
-  //   qDebug() << "model.inverted = " << model.inverted;
-  //   qDebug() << "model.noBlue = " << model.noBlue;
-  //   qDebug() << "model.noGreen = " << model.noGreen;
-  //   qDebug() << "model.noRed = " << model.noRed;
-  // }
 
   // transform the image
   if (!originalMat.empty()) {
@@ -103,6 +96,12 @@ void MainWindow::refreshFromModel() {
     if (model.noBlue)
       transformedMat.forEach<cv::Vec4b>(
         [](auto& pixel, auto) { pixel[2] = 0; });
+
+    cv::resize(transformedMat,
+               transformedMat,
+               cv::Size(),
+               model.sizeModifier,
+               model.sizeModifier);
   }
 
   // display the transformed image
@@ -116,7 +115,9 @@ void MainWindow::refreshFromModel() {
     auto pixmap = QPixmap::fromImage(qt_image);
     Q_ASSERT(!pixmap.isNull());
 
-    ui->imageTransformed->setPixmap(pixmap);
+    int w = ui->imageTransformed->width();
+    int h = ui->imageTransformed->height();
+    ui->imageTransformed->setPixmap(pixmap.scaled(w, h, Qt::KeepAspectRatio));
   }
 
   qDebug() << "---refreshed";
@@ -162,5 +163,10 @@ void MainWindow::on_checkBoxNoGreen_toggled(bool checked) {
 
 void MainWindow::on_checkBoxNoBlue_toggled(bool checked) {
   model.noBlue = checked;
+  refreshFromModel();
+}
+
+void MainWindow::on_spinBoxSize_valueChanged(double sizeModifier) {
+  model.sizeModifier = sizeModifier;
   refreshFromModel();
 }
