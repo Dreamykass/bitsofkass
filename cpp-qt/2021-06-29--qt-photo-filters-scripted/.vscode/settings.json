@@ -1,0 +1,19 @@
+{
+    "cmake.configureSettings": {
+        // "sol2_DIR": "D:/Git/vcpkg/packages/sol2_x64-windows/share/sol2",
+        "OpenCV_DIR": "D:/Code/__cpp-libs/opencv/build",
+        "Qt_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5",
+        "QT_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5",
+        "Qt5_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5",
+        "Qt5Widgets_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5Widgets",
+        "Qt5WidgetsTools_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5WidgetsTools",
+        "Qt5CoreTools_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5CoreTools",
+        "Qt5GuiTools_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5GuiTools",
+        // "CMAKE_TOOLCHAIN_FILE": "D:/Git/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_PREFIX_PATH": "D:/Git/vcpkg/installed/x64-windows",
+    },
+    // "cmake.configureArgs": [
+    //     "CMAKE_TOOLCHAIN_FILE=D:/Git/vcpkg/scripts/buildsystems/vcpkg.cmake",
+    //     "-DCMAKE_TOOLCHAIN_FILE=D:/Git/vcpkg/scripts/buildsystems/vcpkg.cmake",
+    // ]
+}
