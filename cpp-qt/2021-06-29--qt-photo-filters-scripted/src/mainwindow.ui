@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>815</width>
-    <height>667</height>
+    <width>941</width>
+    <height>651</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,6 +45,12 @@
         </property>
         <item>
          <widget class="QLabel" name="imageOriginal">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -117,7 +123,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Example functions available for use in the script:&lt;br/&gt;```&lt;br/&gt;grayscale()&lt;br/&gt;invert()&lt;br/&gt;noRed()&lt;br/&gt;noGreen()&lt;br/&gt;noBlue()&lt;br/&gt;resize(x, y)&lt;br/&gt;clamp(channel, a, b)&lt;br/&gt;```&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Example functions available for use in the script:&lt;br/&gt;```&lt;br/&gt;grayscale()&lt;br/&gt;invert()&lt;br/&gt;noRed()&lt;br/&gt;noGreen()&lt;br/&gt;noBlue()&lt;br/&gt;resize(x, y)&lt;br/&gt;clamp(channel, a, b)&lt;br/&gt;noise(channel, offset, clamp)&lt;br/&gt;```&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -132,6 +138,12 @@
         </item>
         <item>
          <widget class="QLabel" name="imageTransformed">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -148,7 +160,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>815</width>
+     <width>941</width>
      <height>20</height>
     </rect>
    </property>

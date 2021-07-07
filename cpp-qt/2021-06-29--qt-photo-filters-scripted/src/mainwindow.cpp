@@ -8,6 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <sol/sol.hpp>
 #include <algorithm>
+#include "FastNoiseLite.h"
 
 MainWindow::MainWindow(QWidget* parent)
   : QMainWindow(parent)
@@ -122,6 +123,26 @@ void MainWindow::refreshFromModel() {
       });
     });
 
+    lua.set_function("noise", [&](uchar channel, double offset, bool clamp) {
+      channel = std::clamp(channel, (uchar)0, (uchar)3);
+
+      FastNoiseLite noise;
+      noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Perlin);
+
+      transformedMat.forEach<cv::Vec4b>([&](auto& pixel, const int position[]) {
+        //
+        double x = position[1] * 1.0 / transformedMat.cols * 255.0;
+        double y = position[0] * 1.0 / transformedMat.rows * 255.0;
+
+        double val = noise.GetNoise(x, y, (double)channel) * offset;
+
+        if (clamp)
+          pixel[channel] += std::clamp(val, 0.0, 255.0);
+        else
+          pixel[channel] += val;
+      });
+    });
+
     lua.script(ui->textEditLuaScript->toPlainText().toStdString());
   }
 
@@ -155,8 +176,11 @@ void MainWindow::on_buttonSave_clicked() {
       tr("Image Files (*.png *.jpg *.bmp)"));
     qDebug() << "filename: " << filename;
 
+    auto tempMat = model.transformedMat.clone();
+    cv::cvtColor(model.transformedMat, tempMat, cv::COLOR_RGBA2BGRA);
+
     if (!filename.isEmpty())
-      cv::imwrite(filename.toStdString(), model.transformedMat);
+      cv::imwrite(filename.toStdString(), tempMat);
   }
 
   qDebug("--done saving");

@@ -40,6 +40,7 @@ set(PROJECT_SOURCES
         src/mainwindow.cpp
         src/mainwindow.h
         src/mainwindow.ui
+        src/FastNoiseLite.h
         ${UIS_HDRS}
 )
 

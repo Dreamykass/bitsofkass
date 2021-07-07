@@ -1,6 +1,6 @@
 {
     "cmake.configureSettings": {
-        // "sol2_DIR": "D:/Git/vcpkg/packages/sol2_x64-windows/share/sol2",
+        "sol2_DIR": "D:/Git/vcpkg/packages/sol2_x64-windows/share/sol2",
         "OpenCV_DIR": "D:/Code/__cpp-libs/opencv/build",
         "Qt_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5",
         "QT_DIR": "C:/QT/5.15.2/msvc2019_64/lib/cmake/Qt5",
