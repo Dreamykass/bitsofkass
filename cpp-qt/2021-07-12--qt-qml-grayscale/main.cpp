@@ -1,0 +1,44 @@
+#include "image_provider.h"
+#include "model.h"
+#include <QGuiApplication>
+#include <QQmlApplicationEngine>
+#include <QQmlComponent>
+#include <QQmlContext>
+#include <QQuickStyle>
+
+int main(int argc, char *argv[])
+{
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+
+    QGuiApplication app(argc, argv);
+    QQmlApplicationEngine engine;
+
+    auto *imageProvider = new ImageProvider();
+    engine.addImageProvider("imageProvider", imageProvider); // takes ownership
+
+    const QUrl url(QStringLiteral("qrc:/main.qml"));
+
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::objectCreated,
+        &app,
+        [url](QObject *obj, const QUrl &objUrl) {
+            if (!obj && url == objUrl)
+                QCoreApplication::exit(-1);
+        },
+        Qt::QueuedConnection);
+
+    QQuickStyle::setStyle("Universal");
+
+    //    engine.load(url);
+    QQmlComponent component(&engine, url);
+    QObject *comp = component.create();
+
+    Model model(comp, imageProvider);
+    engine.rootContext()->setContextProperty("model", &model);
+    //    engine.rootContext()->setContextProperty("imageProvider", (QObject *) imageProvider);
+
+    return app.exec();
+}
