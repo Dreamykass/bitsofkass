@@ -13,10 +13,8 @@ Window {
         id: treeNodeComponent
         TreeNode {
             property string name: "default name"
+            property string bruh: "default bruh"
             property var distortionDescription: null
-            property var onClickedFn: function () {
-                print("siema")
-            }
         }
     }
 
@@ -37,9 +35,17 @@ Window {
             }
 
             TableViewColumn {
-                //                title: "Name"
                 role: "name"
                 width: 99999
+            }
+
+            onClicked: {
+                print(index.parent.row, index.row)
+                let ix = model.index(index.row, 0)
+                let it = model.getNodeByIndex(ix)
+                print(it.name)
+                print(it.bruh)
+                print(it.distortionDescription)
             }
 
             Component.onCompleted: {
@@ -66,7 +72,8 @@ Window {
                     const descriptionsForEach = function (desc) {
                         var node = treeNodeComponent.createObject()
                         node.name = desc.name
-                        node.distortionDescription = desc
+                        node.bruh = "bruhh"
+                        node.distortionDescription = "desc"
                         model.insertNode(node, model.getIndexByNode(topNode))
                     }
                     descriptions.forEach(descriptionsForEach)
