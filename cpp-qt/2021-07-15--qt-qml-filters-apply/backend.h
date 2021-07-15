@@ -15,9 +15,11 @@ public:
 public slots:
     QJsonArray getDistortionDescriptions();
     void loadImage(const QString &filename);
+    void distort(const QJsonArray &descsJson);
 
 private:
     ImageProvider *imageProvider;
+    QMap<QString, QSharedPointer<const Distortion>> allDefaultDistortions;
 };
 
 #endif // BACKEND_H

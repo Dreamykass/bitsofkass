@@ -125,7 +125,7 @@ Window {
             delegate: Rectangle {
                 height: 20
                 width: parent.width
-                color: "gray"
+                color: "lightgray"
                 Text {
                     padding: 3
                     text: {
@@ -208,6 +208,20 @@ Window {
         Text {
             text: qsTr("Preview/save")
             font.pointSize: 12
+        }
+
+        Button {
+            text: "Distort"
+            onClicked: {
+                print("distorting")
+                let arr = []
+                for (var i = 0; i < listViewSelected.model.count; i++) {
+                    arr.push(listViewSelected.model.get(i).desc)
+                }
+                backend.distort(arr)
+                imageDistorted.source = ""
+                imageDistorted.source = "image://imageProvider/imageDistorted"
+            }
         }
 
         Image {

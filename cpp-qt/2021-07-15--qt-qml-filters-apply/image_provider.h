@@ -47,6 +47,24 @@ public:
         qDebug("cv_image set");
     }
 
+    void distort(QList<QSharedPointer<Distortion>> dists)
+    {
+        qDebug("actually distorting...");
+
+        matDistorted = matOriginal.clone();
+
+        foreach (const auto &dist, dists) {
+            dist->distort(matDistorted);
+        }
+
+        imageDistorted = QImage(matDistorted.data,
+                                matDistorted.cols,
+                                matDistorted.rows,
+                                QImage::Format_RGBA8888);
+
+        qDebug("done!");
+    }
+
 private:
     cv::Mat matOriginal;
     QImage imageOriginal;
