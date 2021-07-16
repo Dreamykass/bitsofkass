@@ -1,6 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
-import QtQuick.Controls 1.4
+import QtQuick.Controls 2.15
 import QtQml.Models 2.15
 import QtQuick.Dialogs 1.3
 
@@ -55,6 +55,63 @@ Window {
             height: parent.width
             source: "image://imageProvider/imageOriginal"
         }
+
+        Text {
+            text: qsTr("Categories")
+            font.pointSize: 12
+        }
+
+        // ------------ listViewCategories
+        ListView {
+            id: listViewCategories
+
+            width: parent.width
+            height: parent.height * 0.4
+
+            model: ListModel {}
+            delegate: Rectangle {
+                height: 20
+                width: parent.width
+                color: "lightgray"
+                Text {
+                    padding: 3
+                    text: {
+                        if (!category || category === "")
+                            return "All"
+                        else
+                            return category
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        print("listViewCategories: clicked " + category)
+
+                        listViewAvailable.model.clear()
+                        let list = backend.getDistortionDescriptions()
+                        list.forEach(function (desc) {
+                            if (desc.category.includes(category))
+                                listViewAvailable.model.append({
+                                                                   "desc": desc
+                                                               })
+                        })
+                    }
+                }
+            }
+            Component.onCompleted: {
+                print("listViewCategories: onCompleted")
+                model.append({
+                                 "category": ""
+                             })
+
+                let list = backend.getDistortionDescriptions()
+                let set = new Set()
+                list.forEach(desc => set.add(desc.category))
+                set.forEach(cat => model.append({
+                                                    "category": cat
+                                                }))
+            }
+        } // ------------ /listViewCategories
     } // /column 1
 
     // column 2
@@ -73,7 +130,7 @@ Window {
             id: listViewAvailable
 
             width: parent.width
-            height: parent.height / 2
+            height: parent.height
 
             model: ListModel {}
             delegate: Rectangle {
@@ -108,57 +165,6 @@ Window {
                 })
             }
         } // ------------ /listViewAvailable
-
-        Text {
-            text: qsTr("Categories")
-            font.pointSize: 12
-        }
-
-        // ------------ listViewCategories
-        ListView {
-            id: listViewCategories
-
-            width: parent.width
-            height: parent.height * 0.4
-
-            model: ListModel {}
-            delegate: Rectangle {
-                height: 20
-                width: parent.width
-                color: "lightgray"
-                Text {
-                    padding: 3
-                    text: {
-                        let t = category
-                        return t
-                    }
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        print("listViewCategories: clicked " + category)
-
-                        listViewAvailable.model.clear()
-                        let list = backend.getDistortionDescriptions()
-                        list.forEach(function (desc) {
-                            if (desc.category.includes(category))
-                                listViewAvailable.model.append({
-                                                                   "desc": desc
-                                                               })
-                        })
-                    }
-                }
-            }
-            Component.onCompleted: {
-                print("listViewCategories: onCompleted")
-                let list = backend.getDistortionDescriptions()
-                let set = new Set()
-                list.forEach(desc => set.add(desc.category))
-                set.forEach(cat => model.append({
-                                                    "category": cat
-                                                }))
-            }
-        } // ------------ /listViewCategories
     } // /column 2
 
     // column 3
@@ -175,28 +181,105 @@ Window {
         ListView {
             id: listViewSelected
             width: parent.width
-            height: parent.height
+            height: parent.height * 0.5
 
             model: ListModel {}
-            delegate: Text {
-                text: {
-                    print("listViewSelected: delegate")
+            delegate: Rectangle {
+                height: 20
+                width: parent.width
+                color: "lightgray"
 
-                    let t = desc.name
-                    t += " ["
-                    Object.keys(desc.arguments).forEach(function (a) {
-                        t += ""
-                        t += desc.arguments[a].name
-                        t += ": "
-                        t += desc.arguments[a].value
-                        t += "; "
-                    })
-                    t += "]"
-                    print("listViewSelected: delegate done")
-                    return t
+                Text {
+                    text: {
+                        print("listViewSelected: delegate")
+
+                        let t = desc.name
+                        t += " ["
+                        Object.keys(desc.arguments).forEach(function (a) {
+                            t += ""
+                            t += desc.arguments[a].name
+                            t += ": "
+                            t += desc.arguments[a].value
+                            t += "; "
+                        })
+                        t += "]"
+                        print("listViewSelected: delegate done")
+                        return t
+                    }
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        print("listViewSelected: clicked name, id: ",
+                              desc.name, index)
+                        listViewArguments.model.clear()
+                        Object.keys(desc.arguments).forEach(function (key) {
+                            listViewArguments.model.append({
+                                                               "desc": desc,
+                                                               "key": key,
+                                                               "index": index,
+                                                               "arg": desc.arguments[key]
+                                                           })
+                        })
+                    }
                 }
             }
         } // ------------ /listViewSelected
+
+        Text {
+            text: qsTr("Arguments")
+            font.pointSize: 12
+        }
+        // ------------ listViewArguments
+        ListView {
+            id: listViewArguments
+            width: parent.width
+            height: parent.height * 0.5
+
+            model: ListModel {}
+            delegate: Rectangle {
+                height: 20
+                // width: parent.width
+                color: "gray"
+
+                Row {
+                    Text {
+                        text: {
+                            `${arg.name}: [${arg.min}; ${arg.min}]`
+                        }
+                    }
+                    Slider {
+                        from: {
+                            arg.min
+                        }
+                        value: {
+                            arg.value
+                        }
+                        to: {
+                            arg.max
+                        }
+                        onMoved: {
+                            print("Argument changed from to: ", arg.name,
+                                  arg.value, value)
+
+                            let o = listViewSelected.model.get(index)
+                            let d = o.desc
+                            d.arguments[key].value = value
+                            arg = d.arguments[key]
+                            o.desc = d
+                            listViewSelected.model.set(index, o)
+                        }
+                    }
+                    Text {
+                        id: valueText
+                        text: {
+                            `: ${arg.value.toFixed(2)}`
+                        }
+                    }
+                }
+            }
+        } // ------------ /listViewArguments
     } // /column 3
 
     // column 4
