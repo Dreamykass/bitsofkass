@@ -131,6 +131,39 @@ Page {
         }
     }
 
+    function getRandomBetween(min, max) {
+        return Math.random() * (max - min) + min
+    }
+
+    function update(p) {
+        console.log("updated with: " + p)
+
+        // chart:
+        if (p <= 54) {
+            chart_barset_green.append(p)
+            chart_barset_red.append(0)
+        } else {
+            chart_barset_green.append(0)
+            chart_barset_red.append(p)
+        }
+
+        chart_bar_value_axis_x.max = chart_barset_green.values.length
+
+        //---
+        // percent circle:
+        current_percent_circle_text.text = Math.floor(p) + "%"
+    }
+
+    Timer {
+        interval: 250
+        running: true
+        repeat: true
+        onTriggered: {
+            var p = getRandomBetween(49, 59)
+            update(p)
+        }
+    }
+
     // chart
     Item {
         id: chart_item
@@ -141,17 +174,23 @@ Page {
         width: parent.width
 
         ChartView {
+            id: chart_view
+
             title: "Stacked Bar series"
             anchors.fill: parent
             legend.alignment: Qt.AlignBottom
             legend.visible: false
             antialiasing: true
             backgroundColor: "#05071b"
+            animationOptions: ChartView.AllAnimations
 
             StackedBarSeries {
+                id: chart_bar_series
+
                 barWidth: 1
 
                 axisX: ValueAxis {
+                    id: chart_bar_value_axis_x
                     lineVisible: false
                     gridVisible: false
                     minorGridVisible: false
@@ -170,17 +209,26 @@ Page {
                 }
 
                 BarSet {
-                    label: "Green"
+                    id: chart_barset_green
+                    label: "Green" // more than 54
                     color: "#28d16f"
                     borderWidth: 0
                     values: [58, 57, 56, 55, 0, 0, 0, 0]
                 }
                 BarSet {
-                    label: "Red"
+                    id: chart_barset_red
+                    label: "Red" // less than 54
                     color: "#df1730"
                     borderWidth: 0
                     values: [0, 0, 0, 0, 54, 53, 53, 52]
                 }
+
+//                BarSet {
+//                    label: "Red" // less than 54
+//                    color: "#df1730"
+//                    borderWidth: 0
+//                    values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+//                }
             }
         }
     }
@@ -309,6 +357,8 @@ Page {
             anchors.horizontalCenter: small_circle_left.horizontalCenter
 
             Label {
+                id: small_label_left_min
+
                 anchors.bottom: parent.top
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("50%")
@@ -344,6 +394,8 @@ Page {
             anchors.horizontalCenter: small_circle_right.horizontalCenter
 
             Label {
+                id: small_label_right_max
+
                 anchors.top: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
                 text: qsTr("59%")
@@ -373,6 +425,8 @@ Page {
 
         // white big middle circle
         Rectangle {
+            id: current_percent_circle
+
             width: parent.height * 0.80
             height: parent.height * 0.80
             color: "white"
@@ -381,6 +435,7 @@ Page {
             y: parent.height * 0.50 - radius
 
             Text {
+                id: current_percent_circle_text
                 anchors.centerIn: parent
                 color: "#05071b" // background blue
                 text: "54%"
