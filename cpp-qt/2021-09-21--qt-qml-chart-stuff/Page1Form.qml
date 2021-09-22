@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtCharts 2.15
+import QtQuick.Shapes 1.0
 
 Page {
     anchors.fill: parent
@@ -8,7 +9,7 @@ Page {
     title: qsTr("Page 1")
 
     background: Rectangle {
-        color: "#05071b"
+        color: "#05071b" // background blue
     }
 
     // top time counter
@@ -16,7 +17,7 @@ Page {
         id: top_time_counter_item
 
         anchors.top: parent.top
-        height: parent.height * 0.20
+        height: parent.height * 0.10
         width: parent.width
 
         Label {
@@ -33,7 +34,7 @@ Page {
 
         anchors.top: top_time_counter_item.bottom
         anchors.left: parent.left
-        height: parent.height * 0.10
+        height: parent.height * 0.08
         width: parent.width
 
         Column {
@@ -136,7 +137,7 @@ Page {
 
         anchors.top: stats_item.bottom
         anchors.left: parent.left
-        height: parent.height * 0.5
+        height: parent.height * 0.50
         width: parent.width
 
         ChartView {
@@ -148,6 +149,8 @@ Page {
             backgroundColor: "#05071b"
 
             StackedBarSeries {
+                barWidth: 1
+
                 axisX: ValueAxis {
                     lineVisible: false
                     gridVisible: false
@@ -182,19 +185,219 @@ Page {
         }
     }
 
-    // current thing
-    Item {}
+    // two dots whatever
+    Item {
+        id: two_dots_item
+
+        anchors.top: chart_item.bottom
+        height: parent.height * 0.06
+        width: parent.width
+
+        Rectangle {
+            width: 10
+            height: 10
+            color: "white"
+            radius: width * 0.5
+            y: parent.height * 0.01
+            x: parent.width * 0.50 + radius
+        }
+        Rectangle {
+            width: 10
+            height: 10
+            color: "#e52821" // red
+            radius: width * 0.5
+            y: parent.height * 0.01
+            x: parent.width * 0.50 - (radius * 3)
+        }
+    }
+
+    // current percent thing
+    Item {
+        id: current_percent_item
+
+        anchors.top: two_dots_item.bottom
+        height: parent.height * 0.10
+        width: parent.width
+
+        // dotted line
+        Item {
+            id: dotted_line_item
+
+            width: parent.width * 0.6
+            height: parent.height
+            anchors.centerIn: parent
+
+            Shape {
+                y: parent.height * 0.50
+                width: 2
+                ShapePath {
+                    strokeColor: "white"
+                    strokeWidth: 2
+                    strokeStyle: ShapePath.DashLine
+                    dashPattern: [1, 8]
+                    startX: 0
+                    startY: 0
+                    PathLine {
+                        x: parent.width * 0.6
+                        y: 0
+                    }
+                }
+            }
+        }
+
+        // small white circle left
+        Rectangle {
+            id: small_circle_left
+
+            width: parent.height * 0.20
+            height: parent.height * 0.20
+            color: "white"
+            radius: width * 0.50
+            y: parent.height * 0.50 - radius
+            anchors.right: dotted_line_item.left
+        }
+
+        // small white circle right
+        Rectangle {
+            id: small_circle_right
+
+            width: parent.height * 0.20
+            height: parent.height * 0.20
+            color: "white"
+            radius: width * 0.50
+            y: parent.height * 0.50 - radius
+            anchors.left: dotted_line_item.right
+        }
+
+        // text left "MIN"
+        Item {
+            width: parent.width * 0.10
+            height: parent.height * 0.50
+            anchors.right: small_circle_left.left
+            anchors.rightMargin: 4
+            y: parent.height * 0.25
+
+            Label {
+                anchors.centerIn: parent
+                text: qsTr("MIN")
+                color: "white"
+                font.pixelSize: parent.height / 2
+            }
+        }
+
+        // text right "MAX"
+        Item {
+            width: parent.width * 0.10
+            height: parent.height * 0.50
+            anchors.left: small_circle_right.right
+            anchors.leftMargin: 4
+            y: parent.height * 0.25
+
+            Label {
+                anchors.centerIn: parent
+                text: qsTr("MAX")
+                color: "white"
+                font.pixelSize: parent.height / 2
+            }
+        }
+
+        // text & triangle above left "MIX"
+        Item {
+            width: small_circle_left.width
+            height: small_circle_left.height
+            anchors.bottom: small_circle_left.top
+            anchors.horizontalCenter: small_circle_left.horizontalCenter
+
+            Label {
+                anchors.bottom: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("50%")
+                color: "white"
+                font.pixelSize: 12
+            }
+
+            Shape {
+                width: parent.width
+                height: parent.height
+                anchors.centerIn: parent
+                antialiasing: true
+                ShapePath {
+                    startX: 0
+                    startY: 0
+                    PathLine {
+                        x: small_circle_left.width
+                        y: 0
+                    }
+                    PathLine {
+                        x: small_circle_left.width * 0.50
+                        y: small_circle_left.height
+                    }
+                }
+            }
+        }
+
+        // text & triangle above right "MAX"
+        Item {
+            width: small_circle_right.width
+            height: small_circle_right.height
+            anchors.top: small_circle_right.bottom
+            anchors.horizontalCenter: small_circle_right.horizontalCenter
+
+            Label {
+                anchors.top: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("59%")
+                color: "white"
+                font.pixelSize: 12
+            }
+
+            Shape {
+                width: parent.width
+                height: parent.height
+                anchors.centerIn: parent
+                antialiasing: true
+                ShapePath {
+                    startX: small_circle_left.width * 0.50
+                    startY: 0
+                    PathLine {
+                        x: small_circle_left.width
+                        y: small_circle_left.height
+                    }
+                    PathLine {
+                        x: 0
+                        y: small_circle_left.height
+                    }
+                }
+            }
+        }
+
+        // white big middle circle
+        Rectangle {
+            width: parent.height * 0.80
+            height: parent.height * 0.80
+            color: "white"
+            radius: width * 0.50
+            x: parent.width * 0.50 - radius
+            y: parent.height * 0.50 - radius
+
+            Text {
+                anchors.centerIn: parent
+                color: "#05071b" // background blue
+                text: "54%"
+            }
+        }
+    }
 
     // stop/pause circles:
     Row {
         anchors.bottom: parent.bottom
-        height: parent.height * 0.20
+        height: parent.height * 0.16
         width: parent.width
 
         // STOP
         Rectangle {
-            width: parent.width * 0.2
-            height: parent.width * 0.2
+            width: parent.height * 0.80
+            height: parent.height * 0.80
             color: "#e52821"
             radius: width * 0.5
             anchors.left: parent.left
@@ -209,9 +412,9 @@ Page {
 
         // PAUSE
         Rectangle {
-            width: parent.width * 0.2
-            height: parent.width * 0.2
-            color: "#e52821"
+            width: parent.height * 0.80
+            height: parent.height * 0.80
+            color: "#e52821" // red
             radius: width * 0.5
             anchors.right: parent.right
             anchors.rightMargin: radius
