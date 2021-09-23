@@ -62,7 +62,7 @@ Page {
         }
     }
 
-    // workout type
+    // activity type
     Item {
         id: activity_item
 
@@ -72,32 +72,38 @@ Page {
         anchors.horizontalCenter: workout_type_item.horizontalCenter
         anchors.topMargin: 10
 
-        SwipeView {
-            width: parent.width * 0.33
+        PathView {
+            width: parent.width
             height: parent.height
             anchors.horizontalCenter: parent.horizontalCenter
-            clip: false
 
-            Label {
-                text: qsTr("ENDURANCE")
+            model: ListModel {
+                ListElement { name: "ENDURANCE"}
+                ListElement { name: "INTERVAL"}
+                ListElement { name: "SOMETHING"}
+                ListElement { name: "WHATEVER"}
+            }
+            delegate: Label {
+                text: model.name
                 color: "white"
                 horizontalAlignment: Text.AlignHCenter
             }
-            Label {
-                text: qsTr("INTERVAL")
-                color: "white"
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Label {
-                text: qsTr("SOMETHING")
-                color: "white"
-                horizontalAlignment: Text.AlignHCenter
-            }
-            Label {
-                text: qsTr("WHATEVER")
-                color: "white"
-                horizontalAlignment: Text.AlignHCenter
-            }
+            path: Path {
+               startX: parent.width * 0.50
+               startY: 0
+               PathLine {
+                   x: parent.width + parent.width * 0.25
+                   y: 0
+               }
+               PathMove {
+                   x: 0 - parent.width * 0.25
+                   y: 0
+               }
+               PathLine {
+                   x: parent.width * 0.50
+                   y: 0
+               }
+           }
         }
     }
 
