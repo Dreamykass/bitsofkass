@@ -20,7 +20,18 @@ Page {
         height: parent.height * 0.10
         width: parent.width
 
+        property double startTime: new Date().getTime()
+
+        function updateTime() {
+            var now = new Date().getTime() - startTime
+            var ms = now % 1000
+            var sec = Math.floor(now / 1000) % 60
+
+            top_time_counter_label.text = `00:00:${sec}.${ms}`
+        }
+
         Label {
+            id: top_time_counter_label
             anchors.centerIn: parent
             text: qsTr("00:21:38")
             color: "white"
@@ -147,11 +158,24 @@ Page {
             chart_barset_red.append(p)
         }
 
+//        if (chart_barset_green.values.length > 60){
+//            chart_barset_green.remove(0)
+//            chart_barset_red.remove(0)
+//            console.log("shifted")
+//        }
+
         chart_bar_value_axis_x.max = chart_barset_green.values.length
+        chart_bar_value_axis_x.min = chart_barset_green.values.length - 30
+        if (chart_bar_value_axis_x.min <= 0)
+            chart_bar_value_axis_x.min = 0
 
         //---
         // percent circle:
         current_percent_circle_text.text = Math.floor(p) + "%"
+
+        //---
+        // top timer:
+        top_time_counter_item.updateTime()
     }
 
     Timer {
@@ -213,14 +237,14 @@ Page {
                     label: "Green" // more than 54
                     color: "#28d16f"
                     borderWidth: 0
-                    values: [58, 57, 56, 55, 0, 0, 0, 0]
+                    values: []
                 }
                 BarSet {
                     id: chart_barset_red
                     label: "Red" // less than 54
                     color: "#df1730"
                     borderWidth: 0
-                    values: [0, 0, 0, 0, 54, 53, 53, 52]
+                    values: []
                 }
 
 //                BarSet {
