@@ -147,7 +147,7 @@ private slots: // from the bluetooth stuff
         qDebug("invalid state? -=-=-=-=-=-=-=-=-");
     }
 
-    void serviceDiscovered(const QBluetoothUuid &newService)
+    void serviceDiscovered(const QBluetoothUuid &new_service)
     {
         if (current_state != State::Connected) {
             qDebug("current_state != State::Connected");
@@ -155,7 +155,7 @@ private slots: // from the bluetooth stuff
             return;
         }
 
-        qDebug("serviceDiscovered");
+        qDebug() << "serviceDiscovered, uuid: " << new_service.toString();
     }
 
     void serviceScanDone()
