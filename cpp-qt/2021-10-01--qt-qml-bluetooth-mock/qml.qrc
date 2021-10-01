@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>initial.qml</file>
+        <file>connecting.qml</file>
+        <file>connected.qml</file>
+    </qresource>
+</RCC>
