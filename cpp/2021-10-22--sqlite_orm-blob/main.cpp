@@ -59,21 +59,6 @@ struct Training {
   }
 };
 
-using db_type = decltype(sqlite_orm::make_storage(
-  ":memory:",
-  sqlite_orm::make_table(
-    "trainings",
-    sqlite_orm::make_column("id",
-                            &Training::id,
-                            sqlite_orm::autoincrement(),
-                            sqlite_orm::primary_key()),
-    sqlite_orm::make_column("user_id", &Training::user_id),
-    sqlite_orm::make_column("start_date", &Training::start_date),
-    sqlite_orm::make_column("end_date", &Training::end_date),
-    sqlite_orm::make_column("points",
-                            &Training::points_into_blob,
-                            &Training::set_points_from_blob))));
-
 int main() {
   try {
     fmt::print("hello\n");
@@ -82,7 +67,7 @@ int main() {
     // --------------------------------------------------------------------
     // ----------------------------------------------- set up db and tables
 
-    db_type storage = sqlite_orm::make_storage(
+    auto storage = sqlite_orm::make_storage(
       ":memory:",
       sqlite_orm::make_table(
         "trainings",
