@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>BootView.qml</file>
+        <file>OosScreenView.qml</file>
+        <file>LoginScreen.qml</file>
+    </qresource>
+</RCC>
