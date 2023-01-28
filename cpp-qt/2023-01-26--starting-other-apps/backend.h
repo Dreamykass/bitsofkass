@@ -35,6 +35,36 @@ public slots:
     QtAndroid::startActivity(intent, 0, 0);
   }
 
+  void openAppByPkgNameOrPlayStore(QString pkgName) {
+    QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
+        "org/qtproject/qt5/android/QtNative", "activity",
+        "()Landroid/app/Activity;");
+
+    QAndroidJniObject appContext = activity.callObjectMethod(
+        "getApplicationContext", "()Landroid/content/Context;");
+
+    QAndroidJniObject packageManager = appContext.callObjectMethod(
+        "getPackageManager", "()Landroid/content/pm/PackageManager;");
+
+    QAndroidJniObject intent = packageManager.callObjectMethod(
+        "getLaunchIntentForPackage",
+        "(Ljava/lang/String;)Landroid/content/Intent;",
+        QAndroidJniObject::fromString(pkgName).object<jstring>());
+
+    if (!intent.isValid()) {
+      QAndroidJniObject url =
+          QAndroidJniObject::fromString("market://details?id=" + pkgName);
+
+      intent = QAndroidJniObject::callStaticObjectMethod(
+          "android/content/Intent", "parseUri",
+          "(Ljava/lang/String;I)Landroid/content/Intent;",
+          url.object<jstring>(), 0x00000001);
+      // 0x00000001 == URI_INTENT_SCHEME
+    }
+
+    QtAndroid::startActivity(intent, 0, 0);
+  }
+
   void openAppByPkgNameWithStrArg(QString pkgName, QString strArg) {
     QAndroidJniObject activity = QAndroidJniObject::callStaticObjectMethod(
         "org/qtproject/qt5/android/QtNative", "activity",
@@ -51,7 +81,7 @@ public slots:
         "(Ljava/lang/String;)Landroid/content/Intent;",
         QAndroidJniObject::fromString(pkgName).object<jstring>());
 
-    packageManager.callObjectMethod(
+    intent.callObjectMethod(
         "putExtra",
         "(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;",
         QAndroidJniObject::fromString("arg").object<jstring>(),

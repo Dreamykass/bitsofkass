@@ -46,6 +46,13 @@ Window {
             }
         }
 
+        Button {
+            text: "Backend.openAppByPkgNameOrPlayStore()"
+            onClicked: {
+                Backend.openAppByPkgNameOrPlayStore(packageNameInput.text)
+            }
+        }
+
         Label {
             text: "app package name: "
         }
