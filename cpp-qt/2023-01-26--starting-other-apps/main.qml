@@ -40,6 +40,20 @@ Window {
         }
 
         Button {
+            text: "Backend.isAppInstalled()"
+            onClicked: {
+                Backend.isAppInstalled(packageNameInput.text)
+            }
+        }
+
+        Button {
+            text: "Backend.openPlayStoreForApp()"
+            onClicked: {
+                Backend.openPlayStoreForApp(packageNameInput.text)
+            }
+        }
+
+        Button {
             text: "Backend.openAppByPkgName()"
             onClicked: {
                 Backend.openAppByPkgName(packageNameInput.text)
