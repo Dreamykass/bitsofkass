@@ -45,7 +45,6 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -102,6 +101,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const Text(
+              'Some more text.',
             ),
           ],
         ),
