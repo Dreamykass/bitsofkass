@@ -6,7 +6,9 @@ Widget dynamicLayout({
 }) {
   if (MediaQuery.of(context).size.width > 900) {
     return Row(
-      children: children.map((child) => Expanded(child: child)).toList(),
+      children: children
+          .map((child) => Expanded(child: SingleChildScrollView(child: child)))
+          .toList(),
     );
   } else {
     return SingleChildScrollView(
