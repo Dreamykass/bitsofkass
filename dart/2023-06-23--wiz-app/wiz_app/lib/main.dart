@@ -11,9 +11,7 @@ import 'layout.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await prefsInit();
-
   if (!Platform.isAndroid) await windowManager.ensureInitialized();
-
   runApp(const MyApp());
 }
 
@@ -100,13 +98,14 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
     prefsSetWindowOffset(await windowManager.getPosition());
   }
 
-  Widget commandButton(
-      String text, IconData icon, String command, bool enabled) {
+  Widget commandButton(String text, IconData icon, String command, bool enabled,
+      {bool hasMinimumSize = true}) {
     if (enabled) {
       return ElevatedButton.icon(
         icon: Icon(icon),
         label: Text(text),
-        style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(40)),
+        style: ElevatedButton.styleFrom(
+            minimumSize: hasMinimumSize ? const Size.fromHeight(40) : null),
         onPressed: () {
           BulbManager().sendCommand(command);
         },
@@ -115,12 +114,27 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       return OutlinedButton.icon(
         icon: Icon(icon),
         label: Text(text),
-        style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(40)),
+        style: ElevatedButton.styleFrom(
+            minimumSize: hasMinimumSize ? const Size.fromHeight(40) : null),
         onPressed: () {
           BulbManager().sendCommand(command);
         },
       );
     }
+  }
+
+  Widget colorButton(int r, int g, int b) {
+    return IconButton(
+      icon: const Icon(Icons.circle),
+      color: Color.fromRGBO(r, g, b, 1.0),
+      onPressed: () {
+        _controller.color = Color.fromRGBO(r, g, b, 1.0);
+        var color = _currentColor;
+        final command =
+            '{"method":"setPilot","params":{"r":${color.red},"g":${color.green},"b":${color.blue}}}';
+        BulbManager().sendCommand(command);
+      },
+    );
   }
 
   @override
@@ -260,26 +274,34 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
               ),
             ],
           ),
-          Center(
-            child: CircleColorPicker(
-              controller: _controller,
-              onChanged: (color) {
-                setState(() => _currentColor = color);
-              },
-              onEnded: (color) {
-                final command =
-                    '{"method":"setPilot","params":{"r":${color.red},"g":${color.green},"b":${color.blue}}}';
-                BulbManager().sendCommand(command);
-                // print(command);
-                // RawDatagramSocket.bind(InternetAddress.anyIPv4, 38899)
-                //     .then((socket) {
-                //   //socket.broadcastEnabled = true;
-                //   socket.send(utf8.encode(command),
-                //       InternetAddress('192.168.0.165'), 38899);
-                //   socket.close();
-                // });
-              },
-            ),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  colorButton(255, 0, 0),
+                  colorButton(255, 12, 0),
+                  colorButton(255, 24, 0),
+                  colorButton(255, 36, 0),
+                  colorButton(255, 48, 0),
+                  colorButton(255, 60, 0),
+                ],
+              ),
+              Center(
+                child: CircleColorPicker(
+                  controller: _controller,
+                  onChanged: (color) {
+                    setState(() => _currentColor = color);
+                  },
+                  onEnded: (color) {
+                    var color = _currentColor;
+                    final command =
+                        '{"method":"setPilot","params":{"r":${color.red},"g":${color.green},"b":${color.blue}}}';
+                    BulbManager().sendCommand(command);
+                  },
+                ),
+              ),
+            ],
           ),
         ],
       ),
