@@ -133,6 +133,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              const SizedBox(width: 20, height: 20),
               OutlinedButton.icon(
                 icon: const Icon(
                   Icons.code,
@@ -248,10 +249,11 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                 '{"method":"setState","params":{"sceneId":5}}',
                 (bulbState["sceneId"] == 5),
               ),
-              TextField(
+              TextFormField(
                 decoration: const InputDecoration(
-                  hintText: 'bulb addresses',
+                  labelText: 'bulb addresses',
                 ),
+                initialValue: prefsGetBulbAddresses().join(","),
                 onChanged: (text) {
                   prefsSetBulbAddresses(text.split(","));
                 },
