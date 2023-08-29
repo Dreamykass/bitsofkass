@@ -175,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                 'night',
                 Icons.nightlight,
                 '{"method":"setState","params":{"sceneId":14}}',
-                (bulbState["sceneId"] == 14),
+                (bulbState["sceneId"] == 14) && (bulbState["state"]),
               ),
               Row(
                 children: [
@@ -239,29 +239,98 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
                   ),
                 ],
               ),
-              commandButton(
-                'warm',
-                Icons.local_fire_department,
-                '{"method":"setState","params":{"sceneId":11,"temp":2700}}',
-                (bulbState["sceneId"] == 11),
+              Row(
+                children: [
+                  commandButton(
+                    '',
+                    Icons.hdr_weak,
+                    '{"method":"setState","params":{"temp":2200,"dimming":10}}',
+                    false,
+                    hasMinimumSize: false,
+                  ),
+                  Expanded(
+                    child: commandButton(
+                      'hot',
+                      Icons.hot_tub,
+                      '{"method":"setState","params":{"temp":2200}}',
+                      (bulbState["temp"] == 2200) && (bulbState["state"]),
+                      hasMinimumSize: false,
+                    ),
+                  ),
+                  commandButton(
+                    '',
+                    Icons.hdr_strong,
+                    '{"method":"setState","params":{"temp":2200,"dimming":50}}',
+                    false,
+                    hasMinimumSize: false,
+                  ),
+                ],
               ),
-              commandButton(
-                'day',
-                Icons.light_mode,
-                '{"method":"setState","params":{"sceneId":12,"temp":4200}}',
-                (bulbState["sceneId"] == 12),
+              Row(
+                children: [
+                  commandButton(
+                    '',
+                    Icons.hdr_weak,
+                    '{"method":"setState","params":{"sceneId":11,"temp":2700,"dimming":30}}',
+                    false,
+                    hasMinimumSize: false,
+                  ),
+                  Expanded(
+                    child: commandButton(
+                      'warm',
+                      Icons.local_fire_department_sharp,
+                      '{"method":"setState","params":{"sceneId":11,"temp":2700}}',
+                      (bulbState["sceneId"] == 11) && (bulbState["state"]),
+                      hasMinimumSize: false,
+                    ),
+                  ),
+                  commandButton(
+                    '',
+                    Icons.hdr_strong,
+                    '{"method":"setState","params":{"sceneId":11,"temp":2700,"dimming":75}}',
+                    false,
+                    hasMinimumSize: false,
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  commandButton(
+                    '',
+                    Icons.hdr_weak,
+                    '{"method":"setState","params":{"sceneId":12,"temp":4200,"dimming":50}}',
+                    false,
+                    hasMinimumSize: false,
+                  ),
+                  Expanded(
+                    child: commandButton(
+                      'day',
+                      Icons.light_mode,
+                      '{"method":"setState","params":{"sceneId":12,"temp":4200}}',
+                      (bulbState["sceneId"] == 12) && (bulbState["state"]),
+                      hasMinimumSize: false,
+                    ),
+                  ),
+                  commandButton(
+                    '',
+                    Icons.hdr_strong,
+                    '{"method":"setState","params":{"sceneId":12,"temp":4200,"dimming":100}}',
+                    false,
+                    hasMinimumSize: false,
+                  ),
+                ],
               ),
               commandButton(
                 'cold',
                 Icons.ac_unit,
                 '{"method":"setState","params":{"sceneId":13,"temp":6500}}',
-                (bulbState["sceneId"] == 13),
+                (bulbState["sceneId"] == 13) && (bulbState["state"]),
               ),
               commandButton(
                 'fireplace',
                 Icons.fireplace,
                 '{"method":"setState","params":{"sceneId":5}}',
-                (bulbState["sceneId"] == 5),
+                (bulbState["sceneId"] == 5) && (bulbState["state"]),
               ),
               TextFormField(
                 decoration: const InputDecoration(

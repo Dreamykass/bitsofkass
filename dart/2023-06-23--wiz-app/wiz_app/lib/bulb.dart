@@ -69,7 +69,7 @@ class BulbManager extends ChangeNotifier {
       socket?.send(encoded, address, port);
     }
 
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(milliseconds: 100), () {
       sendCommandGetState();
     });
   }
