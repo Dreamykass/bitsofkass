@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import 'dir_struct_widget.dart';
 import 'misc.dart';
 
 void main() {
@@ -10,12 +13,18 @@ void main() {
   logger.w("warning!");
   logger.e("error!");
   logger.wtf("wtf");
+
+  final dir = Directory('F:/SOULSEEK/proper/04 - Atmospheric');
+  final List<FileSystemEntity> entities =
+      dir.listSync(recursive: true).toList();
+  for (var e in entities) {
+    logger.i('${e.absolute}');
+  }
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,16 +51,18 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
+      body: Column(
+        children: <Widget>[
+          const Center(
+            child: Text(
               "Stuff",
             ),
-          ],
-        ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+          ),
+          Expanded(
+            child: dirStructWidget(),
+          ),
+        ],
+      ),
     );
   }
 }

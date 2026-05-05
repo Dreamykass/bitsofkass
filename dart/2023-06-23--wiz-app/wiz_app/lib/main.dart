@@ -25,7 +25,16 @@ class MyApp extends StatelessWidget {
       // theme: ThemeData(
       //   primarySwatch: Colors.purple,
       // ),
-      theme: ThemeData.dark(),
+      // theme: ThemeData.dark(),
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.red,
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.red,
+      ),
+      themeMode: ThemeMode.system,
       home: const MyHomePage(),
     );
   }
@@ -143,7 +152,6 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
       body: dynamicLayout(
         context: context,
         children: [
-          Text(bulbStateStr),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -372,6 +380,7 @@ class _MyHomePageState extends State<MyHomePage> with WindowListener {
               ),
             ],
           ),
+          Text(bulbStateStr),
         ],
       ),
     );
